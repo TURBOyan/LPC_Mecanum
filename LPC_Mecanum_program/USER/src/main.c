@@ -3,11 +3,10 @@
 int main(void)
 {
 	get_clk();
-  Init_ALL();
+ 	Init_ALL();
 
 	while(1)
 	{
-	가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가
 
 	}
 }
