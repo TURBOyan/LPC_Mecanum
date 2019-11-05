@@ -7,13 +7,7 @@ int main(void)
 
 	while(1)
 	{
-		sdjfaiodjfaiojfiaowjesfioaasdfj
-asdfjaksdjfalksdjfaklsdfj
-asdfkjasdkfljafdskl
-asdfasdfasdfasdf
-
-asdfasdfasdf
-asdfasdf
+	가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가
 
 	}
 }
