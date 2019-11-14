@@ -23,77 +23,17 @@
 void RIT_DriverIRQHandler(void)
 {
     PIT_FLAG_CLEAR;
-		uint8 zuoqian=0,zuohou=0,youqian=0,youhou=0;
-
 /****************************数据获取**********************************************************/
-		Refresh_MPUTeam(DMP_MPL);	//九轴数据获取
-		Wheel_Speed_Get_cm_s();	//速度获取
 		Read_ButtSwitData();
-		if(Query_ButtSwitData(Button_Data,Button_Down_Data))
-		{
-			MPU_Data.Yaw_Aid=0;
-			MPU_Data.Yaw_Save=MPU_Data.Yaw;
-		}
-//		Read_GrayData(0);			//光电管数据读取，不打印
 /******************************************************************************************************************/
-
-/**********************************数据计算**********************************************************/
-//		Wheel_Speed_Real_Get();	//将速度转换为XY轴量并保存运动方向
-//		
-//		zuoqian=Base_Data.Gray_Data[0][0]+Base_Data.Gray_Data[0][1]+Base_Data.Gray_Data[0][2]+Base_Data.Gray_Data[1][0]+Base_Data.Gray_Data[2][0];
-//		zuohou =Base_Data.Gray_Data[5][0]+Base_Data.Gray_Data[5][1]+Base_Data.Gray_Data[5][2]+Base_Data.Gray_Data[4][0]+Base_Data.Gray_Data[3][0];
-//		youqian=Base_Data.Gray_Data[0][3]+Base_Data.Gray_Data[0][4]+Base_Data.Gray_Data[0][5]+Base_Data.Gray_Data[1][5]+Base_Data.Gray_Data[2][5];
-//		youhou =Base_Data.Gray_Data[5][3]+Base_Data.Gray_Data[5][4]+Base_Data.Gray_Data[5][5]+Base_Data.Gray_Data[4][5]+Base_Data.Gray_Data[3][5];
-//		
-//		if(zuoqian<zuohou && zuoqian<youqian && zuoqian<youhou)
-//		{
-//			MECANUM_Motor_Data.Speed_X=-15;		//左前
-//			MECANUM_Motor_Data.Speed_Y=15;
-//		}
-//		
-//		if(zuohou<zuoqian && zuohou<youqian && zuohou<youhou)
-//		{
-//			MECANUM_Motor_Data.Speed_X=-15;		//左后
-//			MECANUM_Motor_Data.Speed_Y=-15;
-//		}
-//		if(youqian<zuoqian && youqian<zuohou && youqian<youhou)
-//		{
-//			MECANUM_Motor_Data.Speed_X=15;		//右前
-//			MECANUM_Motor_Data.Speed_Y=15;
-//		}
-//		
-//		if(youhou<zuohou && youhou<zuoqian && youhou<youqian)
-//		{
-//			MECANUM_Motor_Data.Speed_X=15;		//右后
-//			MECANUM_Motor_Data.Speed_Y=-15;
-//		}
-//		
-//		if(youqian == youhou && youqian==zuohou && youqian==zuoqian)
-//		{
-//			MECANUM_Motor_Data.Speed_X=0;		//停
-//			MECANUM_Motor_Data.Speed_Y=0;
-//		}
-
-//		Save_GrayData(Base_Data.Gray_Data,Base_Data.Gray_Data_Last);	//光电管数据保存
-
-		MPU_Data.Yaw_Real=Mpu_Normalization(MPU_Data.Yaw,MPU_Data.Yaw_Save);		
+	
 		MECANUM_Motor_Data.Speed_GyroZ_Out=PID_Calcu(MPU_Data.Yaw_Aid,MPU_Data.Yaw_Real,&PID_Dir,Local);
 		MECANUM_Motor_Data.Speed_GyroZ_Out=RANGE(MECANUM_Motor_Data.Speed_GyroZ_Out,1.5,-1.5);
 		Wheel_Analysis();		//目标速度计算
-    Wheel_Speed_PID();	//速度闭环
 /******************************************************************************************************************/
-		
+
 /***************************************数据输出（至硬件）***********************************************************/
     Motor_PWM_Set(9999);	//PWM赋值
-/******************************************************************************************************************/		
-		
-/***************************************数据保存***********************************************************/		
-
-/******************************************************************************************************************/
-
-
-/***************************************显示***********************************************************/		
-//			OLED_P6x8Int(0 , 0, MPU_Data.Yaw_Real, -4);
 /******************************************************************************************************************/
 }
 
@@ -103,7 +43,7 @@ void FLEXCOMM0_DriverIRQHandler(void)
 		uint8 Data;
     flag = UART0_FIFO_FLAG;
 		static uint8 mode=1;
-		MECANUM_Motor_Data.Speed_All =20;
+		MECANUM_Motor_Data.Speed_All =7100;
     uart_getchar(USART_0,&Data);
     if(flag & USART_FIFOINTSTAT_RXLVL_MASK)//接收FIFO达到设定水平（库默认设定水平 当接收FIFO有一个数据的时候触发中断）
     {
@@ -184,6 +124,9 @@ void FLEXCOMM0_DriverIRQHandler(void)
 				}
 			}
 			LED_P6x8Char(0,0,Data);
+			
+			Wheel_Analysis();
+			Motor_PWM_Set(9999);	
     }
     if(flag & USART_FIFOINTSTAT_RXERR_MASK)//接收FIFO错误
     {

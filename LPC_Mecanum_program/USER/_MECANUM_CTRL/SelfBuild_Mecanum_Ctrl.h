@@ -28,6 +28,7 @@ extern struct MECANUM_Motor_Data_Typedef
 	double SPEED_Get_cm_s[Wheel_Sum+1];
 	double SPEED_Get_cm_s_Last[Wheel_Sum+1];
 	double PWM_Set[Wheel_Sum+1];
+	double PWM_Mid;
 	
 	double Speed_All;
 	double Speed_X;

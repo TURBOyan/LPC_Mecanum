@@ -14,11 +14,11 @@ PIN_enum Gray[6][6]={		//光电管位置（第一行为车头）
 
 void Init_ALL(void)
 {
-	Beep_Init;	//蜂鸣器
-	Servo_Init;	//磁铁舵机
-	Elema_Init(Elema_Mid);	//电磁铁
-	Elema_Init(Elema_Left); 
-	Elema_Init(Elema_Right);
+//	Beep_Init;	//蜂鸣器
+//	Servo_Init;	//磁铁舵机
+//	Elema_Init(Elema_Mid);	//电磁铁
+//	Elema_Init(Elema_Left); 
+//	Elema_Init(Elema_Right);
 	gpio_init(Button_Up,GPI,0,PULLUP);
 	gpio_init(Button_Down,GPI,0,PULLUP);
 	gpio_init(Button_Left,GPI,0,PULLUP);
@@ -29,28 +29,25 @@ void Init_ALL(void)
 	gpio_init(Switch_3,GPI,0,PULLUP);	
 	gpio_init(Switch_4,GPI,0,PULLUP);	
 	
-	for(uint8 row=0;row<6;row++)//光电管初始化，管脚定义在SelfBuild_control.h内
-	{
-		for(uint8 col=0;col<6;col++)
-		{
-			if((uint8)(Gray[row][col])!=0xff)
-			{
-				gpio_init(Gray[row][col],GPI,0,PULLUP);	
-			}
-		}
-	}
+//	for(uint8 row=0;row<6;row++)//光电管初始化，管脚定义在SelfBuild_control.h内
+//	{
+//		for(uint8 col=0;col<6;col++)
+//		{
+//			if((uint8)(Gray[row][col])!=0xff)
+//			{
+//				gpio_init(Gray[row][col],GPI,0,PULLUP);	
+//			}
+//		}
+//	}
 	
-	
+	MECANUM_Motor_Data.PWM_Mid=3750;
 	for(WheelNum_Typedef num=0;num<Wheel_Sum;num++)		//电机相关初始化
 	{
-		gpio_init(Encoder_Dir_Pin[(uint8)num],GPI,1,PULLUP);		//编码器方向口
-		ctimer_count_init(Encoder_Pulse_TIMER[(uint8)num]);		//编码器计数器
-		sct_pwm_init(Motor_PWM[0][(uint8)num],5000,0);  //正转PWM
-		sct_pwm_init(Motor_PWM[1][(uint8)num],5000,0);  //倒转PWM
+		ctimer_pwm_init(Motor_PWM[0][(uint8)num],250,MECANUM_Motor_Data.PWM_Mid);  //正转PWM
 	}
 	
 	OLED_Init();
-	while(MPU_Init_ForUser());
+	//while(MPU_Init_ForUser());
 
 //  /*----------------------------菜单调参----------------------------------*/
 	DisableInterrupts;                          //关闭所有中断，防止菜单调节过程中出现中断
@@ -60,17 +57,17 @@ void Init_ALL(void)
 	
 	PID_Dir.Param_Kd*=10;
 	
-	Elema_Absorb(Elema_Left);
-	Elema_Absorb(Elema_Right);
+//	Elema_Absorb(Elema_Left);
+//	Elema_Absorb(Elema_Right);
 	MECANUM_Motor_Data.Speed_All=0;
 	MECANUM_Motor_Data.Speed_X=0;
 	MECANUM_Motor_Data.Speed_Y=0;
 	MECANUM_Motor_Data.Speed_GyroZ_Set=0;
 
-	View_MPUddata();
+	//View_MPUddata();
 	
-	pit_init_ms(10);
-	enable_irq(RIT_IRQn);
+//	pit_init_ms(10);
+//	enable_irq(RIT_IRQn);
 	
 	uart_rx_irq(USART_0,1); 
 }

@@ -118,7 +118,9 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>旭?</Name>
+          <Name>8&lt;(
+?ew8&lt;(
+</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -157,14 +159,14 @@
           <Type>0</Type>
           <LineNumber>109</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>29728</Address>
+          <Address>2386</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>F:\2019 smart car competition\浜斿瓙妫嬫満鍣ㄤ汉\LPC54606绋嬪簭\USER\src\isr.c</Filename>
+          <Filename>F:\2019 smart car competition\浜斿瓙妫嬫満鍣ㄤ汉\program_from_Github\TURBOFactory\LPC_Mecanum_program\USER\src\isr.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression>\\LPC546XX\USER/src/isr.c\109</Expression>
         </Bp>
@@ -173,7 +175,17 @@
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>MECANUM_Motor_Data</ItemText>
+          <ItemText>MECANUM_Motor_Data.PWM_Set</ItemText>
+        </Ww>
+        <Ww>
+          <count>1</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>MECANUM_Motor_Data.Speed_Y</ItemText>
+        </Ww>
+        <Ww>
+          <count>2</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>MECANUM_Motor_Data.SPEED_Set_cm_s</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
@@ -773,7 +785,7 @@
 
   <Group>
     <GroupName>user_h</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -913,7 +925,7 @@
 
   <Group>
     <GroupName>user_c</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -1289,7 +1301,7 @@
 
   <Group>
     <GroupName>MPU9250</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
