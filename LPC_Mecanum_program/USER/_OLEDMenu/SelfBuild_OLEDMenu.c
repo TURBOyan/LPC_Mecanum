@@ -28,29 +28,14 @@ __STATIC_INLINE void Menu_Data_Init(void)
 //使用Menu[0]无效！！！
 //Sub_Type类型选择错误会死机！！！
 //最多的变量数为16(16个还不够你用?)
-	Menu[1].Title = "PID_Dis";
-	Menu[1].Sub_Value[0] = &PID_Dis.Param_Kp;
+	
+	Menu[1].Title = "PID_Dir";
+	Menu[1].Sub_Value[0] = &PID_Dir.Param_Kp;
 	Menu[1].Sub_Title[0] = "P";
 	Menu[1].Sub_Type[0] =-4;
-	Menu[1].Sub_Value[1] = &PID_Dis.Param_Kd;
+	Menu[1].Sub_Value[1] = &PID_Dir.Param_Kd;
 	Menu[1].Sub_Title[1] = "D";
 	Menu[1].Sub_Type[1] =-4;
-	
-	Menu[2].Title = "PID_Speed";
-	Menu[2].Sub_Value[0] = &PID_Speed.Param_Kd;
-	Menu[2].Sub_Title[0] = "D";
-	Menu[2].Sub_Type[0] =-4;
-	Menu[2].Sub_Value[1] = &PID_Speed.Param_Ki;
-	Menu[2].Sub_Title[1] = "I";
-	Menu[2].Sub_Type[1] =-4;
-	
-	Menu[3].Title = "PID_Dir";
-	Menu[3].Sub_Value[0] = &PID_Dir.Param_Kp;
-	Menu[3].Sub_Title[0] = "P";
-	Menu[3].Sub_Type[0] =-4;
-	Menu[3].Sub_Value[1] = &PID_Dir.Param_Kd;
-	Menu[3].Sub_Title[1] = "D";
-	Menu[3].Sub_Type[1] =-4;
 
 }
 

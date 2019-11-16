@@ -695,7 +695,7 @@ typedef struct {
  * @addtogroup CAN_Peripheral_Access_Layer CAN Peripheral Access Layer
  * @{
  */
-
+//can×ÜÏß
 /** CAN - Register Layout Typedef */
 typedef struct {
        uint8_t RESERVED_0[16];

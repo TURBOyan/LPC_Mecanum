@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>.\CMSIS;.\Drives\common;.\Drives\inc;.\seekfree;.\USER\inc;.\USER\_OLEDMenu;.\USER\_SONIC;.\USER\_PID;.\USER\_BALANCE;.\USER\_CONTROL;.\USER\_ELECTRON;.\USER\_CAMERA;.\USER\_ELECTRON\_MCP41;.\USER\_UI;.\USER\_MECANUM_CTRL;.\USER\_OLED;.\USER\_DATAHELPER;.\USER\DMP\MPU9250;.\USER\DMP\driver\include;.\USER\DMP\driver\stm32L;.\USER\DMP\driver\eMPL;.\USER\DMP\eMPL-hal;.\USER\DMP\mllite;.\USER\DMP\IIC;.\USER\DMP\mpl;.\USER\DMP\MPU_ForUser</IncludePath>
+              <IncludePath>.\CMSIS;.\Drives\common;.\Drives\inc;.\seekfree;.\USER\inc;.\USER\_OLEDMenu;.\USER\_SONIC;.\USER\_PID;.\USER\_BALANCE;.\USER\_CONTROL;.\USER\_ELECTRON;.\USER\_CAMERA;.\USER\_ELECTRON\_MCP41;.\USER\_UI;.\USER\_MECANUM_CTRL;.\USER\_OLED;.\USER\_DATAHELPER;.\USER\MPU9250\MPU_ForUser;.\USER\MPU9250\MPU9250-Lock\driver\eMPL;.\USER\MPU9250\MPU9250-Lock\driver\include;.\USER\MPU9250\MPU9250-Lock\driver\stm32L;.\USER\MPU9250\MPU9250-Lock\eMPL-hal;.\USER\MPU9250\MPU9250-Lock\mllite;.\USER\MPU9250\MPU9250-Lock\mpl;.\USER\MPU9250\MPU9250-Lock\MPU9250;.\USER\MPU9250\MPU9250-Lock\IIC</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -835,99 +835,99 @@
           <GroupName>MPU9250</GroupName>
           <Files>
             <File>
-              <FileName>inv_mpu.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\USER\DMP\driver\eMPL\inv_mpu.c</FilePath>
-            </File>
-            <File>
-              <FileName>inv_mpu_dmp_motion_driver.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\USER\DMP\driver\eMPL\inv_mpu_dmp_motion_driver.c</FilePath>
-            </File>
-            <File>
-              <FileName>log_stm32.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\USER\DMP\driver\stm32L\log_stm32.c</FilePath>
-            </File>
-            <File>
-              <FileName>eMPL_outputs.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\USER\DMP\eMPL-hal\eMPL_outputs.c</FilePath>
-            </File>
-            <File>
-              <FileName>data_builder.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\USER\DMP\mllite\data_builder.c</FilePath>
-            </File>
-            <File>
-              <FileName>hal_outputs.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\USER\DMP\mllite\hal_outputs.c</FilePath>
-            </File>
-            <File>
-              <FileName>message_layer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\USER\DMP\mllite\message_layer.c</FilePath>
-            </File>
-            <File>
-              <FileName>ml_math_func.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\USER\DMP\mllite\ml_math_func.c</FilePath>
-            </File>
-            <File>
-              <FileName>mlmath.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\USER\DMP\mllite\mlmath.c</FilePath>
-            </File>
-            <File>
-              <FileName>mpl.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\USER\DMP\mllite\mpl.c</FilePath>
-            </File>
-            <File>
-              <FileName>results_holder.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\USER\DMP\mllite\results_holder.c</FilePath>
-            </File>
-            <File>
-              <FileName>start_manager.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\USER\DMP\mllite\start_manager.c</FilePath>
-            </File>
-            <File>
-              <FileName>storage_manager.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\USER\DMP\mllite\storage_manager.c</FilePath>
-            </File>
-            <File>
-              <FileName>libmpllib.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\USER\DMP\mpl\libmpllib.lib</FilePath>
-            </File>
-            <File>
-              <FileName>mpuiic.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\USER\DMP\IIC\mpuiic.c</FilePath>
-            </File>
-            <File>
-              <FileName>mpu9250.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\USER\DMP\MPU9250\mpu9250.c</FilePath>
-            </File>
-            <File>
-              <FileName>MPU9250_Config.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\USER\DMP\MPU_ForUser\MPU9250_Config.h</FilePath>
-            </File>
-            <File>
               <FileName>MPU_ForUser.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\USER\DMP\MPU_ForUser\MPU_ForUser.c</FilePath>
+              <FilePath>.\USER\MPU9250\MPU_ForUser\MPU_ForUser.c</FilePath>
             </File>
             <File>
               <FileName>MPU_ForUser.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\USER\DMP\MPU_ForUser\MPU_ForUser.h</FilePath>
+              <FilePath>.\USER\MPU9250\MPU_ForUser\MPU_ForUser.h</FilePath>
+            </File>
+            <File>
+              <FileName>MPU9250_Config.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\USER\MPU9250\MPU_ForUser\MPU9250_Config.h</FilePath>
+            </File>
+            <File>
+              <FileName>inv_mpu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\MPU9250\MPU9250-Lock\driver\eMPL\inv_mpu.c</FilePath>
+            </File>
+            <File>
+              <FileName>inv_mpu_dmp_motion_driver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\MPU9250\MPU9250-Lock\driver\eMPL\inv_mpu_dmp_motion_driver.c</FilePath>
+            </File>
+            <File>
+              <FileName>log_stm32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\MPU9250\MPU9250-Lock\driver\stm32L\log_stm32.c</FilePath>
+            </File>
+            <File>
+              <FileName>eMPL_outputs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\MPU9250\MPU9250-Lock\eMPL-hal\eMPL_outputs.c</FilePath>
+            </File>
+            <File>
+              <FileName>mpuiic.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\MPU9250\MPU9250-Lock\IIC\mpuiic.c</FilePath>
+            </File>
+            <File>
+              <FileName>data_builder.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\MPU9250\MPU9250-Lock\mllite\data_builder.c</FilePath>
+            </File>
+            <File>
+              <FileName>hal_outputs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\MPU9250\MPU9250-Lock\mllite\hal_outputs.c</FilePath>
+            </File>
+            <File>
+              <FileName>message_layer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\MPU9250\MPU9250-Lock\mllite\message_layer.c</FilePath>
+            </File>
+            <File>
+              <FileName>ml_math_func.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\MPU9250\MPU9250-Lock\mllite\ml_math_func.c</FilePath>
+            </File>
+            <File>
+              <FileName>mlmath.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\MPU9250\MPU9250-Lock\mllite\mlmath.c</FilePath>
+            </File>
+            <File>
+              <FileName>mpl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\MPU9250\MPU9250-Lock\mllite\mpl.c</FilePath>
+            </File>
+            <File>
+              <FileName>results_holder.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\MPU9250\MPU9250-Lock\mllite\results_holder.c</FilePath>
+            </File>
+            <File>
+              <FileName>start_manager.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\MPU9250\MPU9250-Lock\mllite\start_manager.c</FilePath>
+            </File>
+            <File>
+              <FileName>storage_manager.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\MPU9250\MPU9250-Lock\mllite\storage_manager.c</FilePath>
+            </File>
+            <File>
+              <FileName>mpu9250.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\MPU9250\MPU9250-Lock\MPU9250\mpu9250.c</FilePath>
+            </File>
+            <File>
+              <FileName>libmpllib.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>.\USER\MPU9250\MPU9250-Lock\mpl\libmpllib.lib</FilePath>
             </File>
           </Files>
         </Group>

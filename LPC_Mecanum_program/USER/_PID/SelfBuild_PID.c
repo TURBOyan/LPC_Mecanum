@@ -23,7 +23,7 @@ void PID_Dynam(PID_Param_Set* PID_Xxx)	//动态位置式PID输出
   	float Kpp;
   	PID_Xxx->Error=PID_Xxx->AidData_Set-PID_Xxx->Param_measure;
 	Kpp=1.0*(PID_Xxx->Error*PID_Xxx->Error)/PID_Xxx->Param_Kp+PID_Xxx->Param_Ki;
-	PID_Xxx->PID_Dynam_Out=(int32)(Kpp*PID_Xxx->Error
+	PID_Xxx->PID_Dynam_Out=(double)(Kpp*PID_Xxx->Error
 			       +PID_Xxx->Param_Kd*(0.8*(PID_Xxx->Error-PID_Xxx->Error_last)));
 	PID_Xxx->Error_last=PID_Xxx->Error;
 }
@@ -31,7 +31,7 @@ void PID_Dynam(PID_Param_Set* PID_Xxx)	//动态位置式PID输出
 void PID_Incre (PID_Param_Set* PID_Xxx)  //增量式PID输出
 {
 	PID_Xxx->Error = PID_Xxx->AidData_Set -  PID_Xxx->Param_measure;       //当前误差计算
-	PID_Xxx->PID_Incre_Return =(int32)(PID_Xxx->Param_Kp*(PID_Xxx-> Error  - PID_Xxx->Error_last)			//PID增量值计算
+	PID_Xxx->PID_Incre_Return =(double)(PID_Xxx->Param_Kp*(PID_Xxx-> Error  - PID_Xxx->Error_last)			//PID增量值计算
 	  		 	   +PID_Xxx->Param_Ki*PID_Xxx->Error
 				   +PID_Xxx->Param_Kd*(PID_Xxx-> Error  - 2*PID_Xxx->Error_last + PID_Xxx->Error_last_last));
 	PID_Xxx->Error_last_last=PID_Xxx->Error_last;
@@ -42,13 +42,13 @@ void PID_Local  (PID_Param_Set* PID_Xxx)         //位置式PID输出
 {
 	PID_Xxx->Error = PID_Xxx->AidData_Set -  PID_Xxx->Param_measure;
 	PID_Xxx->Error_Sum += PID_Xxx-> Error ;
-	PID_Xxx->PID_Local_Out = (int32)(PID_Xxx->Param_Kp* PID_Xxx-> Error 
+	PID_Xxx->PID_Local_Out = (double)(PID_Xxx->Param_Kp* PID_Xxx-> Error 
 	  		         +PID_Xxx->Param_Ki* PID_Xxx->Error_Sum
 				 +PID_Xxx->Param_Kd* (PID_Xxx-> Error  - PID_Xxx->Error_last));
 	PID_Xxx->Error_last = PID_Xxx-> Error;
 }
 
-int32 PID_Calcu	(float Aid_Data,float Measure_Data,PID_Param_Set* P_I_D,PID_Mode_Typedef PID_Mode)
+double PID_Calcu	(float Aid_Data,float Measure_Data,PID_Param_Set* P_I_D,PID_Mode_Typedef PID_Mode)
 {
 	P_I_D->AidData_Set	    = Aid_Data;
 	P_I_D->Param_measure	= Measure_Data;

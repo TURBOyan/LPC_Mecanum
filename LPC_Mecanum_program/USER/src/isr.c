@@ -23,18 +23,51 @@
 void RIT_DriverIRQHandler(void)
 {
     PIT_FLAG_CLEAR;
-/****************************数据获取**********************************************************/
-		Read_ButtSwitData();
-/******************************************************************************************************************/
+		LED_Fill(0x00);
 	
-		MECANUM_Motor_Data.Speed_GyroZ_Out=PID_Calcu(MPU_Data.Yaw_Aid,MPU_Data.Yaw_Real,&PID_Dir,Local);
-		MECANUM_Motor_Data.Speed_GyroZ_Out=RANGE(MECANUM_Motor_Data.Speed_GyroZ_Out,1.5,-1.5);
-		Wheel_Analysis();		//目标速度计算
-/******************************************************************************************************************/
+		while(1)
+		{
+			LED_P6x8Str(20, 3, "MPU-Interrupt");			//MPU9250的中断服务函数执行时间不能超过10ms，否则将超时警告
+			LED_P6x8Str(10, 4, "function TIMEOUT!!!!");
+		}
+}
 
-/***************************************数据输出（至硬件）***********************************************************/
+void PIN_INT0_DriverIRQHandler(void)															
+{
+		PINT_IST_FLAG_CLEAR(PINT_CH0);
+	
+		disable_irq(PIN_INT0_IRQn);		//暂时关闭中断
+	
+		pit_init_ms(10);		//开启10ms计时，防止本中断执行时间超过10ms
+		set_irq_priority(RIT_IRQn,0);
+		enable_irq(RIT_IRQn);
+	
+	/*********************这里放自己的控制代码******************************************************************************/
+/***********数据获取*****/
+	//	Read_ButtSwitData();			//读取按键值
+		Refresh_MPUTeam(DMP_MPL);//等待三态角数据读取完成
+/***********************/
+		MPU_Data.Yaw_Real=Mpu_Normalization(MPU_Data.Yaw,MPU_Data.Yaw_Save);	//偏航角重设零点
+		MECANUM_Motor_Data.Speed_GyroZ_Out=PID_Calcu(MPU_Data.Yaw_Aid,MPU_Data.Yaw_Real,&PID_Dir,Local);	//角度闭环
+		OLED_P6x8Flo(60, 2, MPU_Data.Yaw_Aid, -3);
+		OLED_P6x8Flo(60, 3, MPU_Data.Yaw_Real, -3);
+		OLED_P6x8Flo(60, 4, MPU_Data.Yaw_Save, -3);
+		OLED_P6x8Int(0, 5, MECANUM_Motor_Data.Speed_GyroZ_Out, -5);
+		if(fabs(MPU_Data.Yaw_Real - MPU_Data.Yaw_Aid)>10)
+			MECANUM_Motor_Data.Speed_GyroZ_Out=RANGE(MECANUM_Motor_Data.Speed_GyroZ_Out,100,-100);	//限幅
+		else
+			MECANUM_Motor_Data.Speed_GyroZ_Out=RANGE(MECANUM_Motor_Data.Speed_GyroZ_Out,50,-50);	//限幅
+		
+		Wheel_Analysis();		//目标速度计算
+
+/********数据输出（至硬件）**/
     Motor_PWM_Set(9999);	//PWM赋值
-/******************************************************************************************************************/
+/**************************/
+    pit_clean();
+		disable_irq(RIT_IRQn);	//关闭计时
+		pit_deinit();
+		
+		enable_irq(PIN_INT0_IRQn);	//开启引脚中断，准备接受下次MPL数据
 }
 
 void FLEXCOMM0_DriverIRQHandler(void)
@@ -43,7 +76,7 @@ void FLEXCOMM0_DriverIRQHandler(void)
 		uint8 Data;
     flag = UART0_FIFO_FLAG;
 		static uint8 mode=1;
-		MECANUM_Motor_Data.Speed_All =7100;
+		MECANUM_Motor_Data.Speed_All =3000;
     uart_getchar(USART_0,&Data);
     if(flag & USART_FIFOINTSTAT_RXLVL_MASK)//接收FIFO达到设定水平（库默认设定水平 当接收FIFO有一个数据的时候触发中断）
     {
@@ -124,9 +157,6 @@ void FLEXCOMM0_DriverIRQHandler(void)
 				}
 			}
 			LED_P6x8Char(0,0,Data);
-			
-			Wheel_Analysis();
-			Motor_PWM_Set(9999);	
     }
     if(flag & USART_FIFOINTSTAT_RXERR_MASK)//接收FIFO错误
     {

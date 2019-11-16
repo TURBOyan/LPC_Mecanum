@@ -22,13 +22,9 @@
 
 #include "common.h"
 
-#define SUCCESS 1
-#define FAIL    0
-
-extern uint8 FLAG_2MS,FLAG_5MS,FLAG_10MS,FLAG_50MS,FLAG_100MS,FLAG_200MS;
-
 void RIT_DriverIRQHandler(void);																									
 
+void PIN_INT0_DriverIRQHandler(void);															
 void PIN_INT7_DriverIRQHandler(void);
 void DMA0_DriverIRQHandler(void);
 void FLEXCOMM5_DriverIRQHandler(void);

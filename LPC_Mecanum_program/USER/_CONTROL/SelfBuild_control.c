@@ -47,15 +47,13 @@ void Init_ALL(void)
 	}
 	
 	OLED_Init();
-	//while(MPU_Init_ForUser());
+	while(MPU_Init_ForUser());	//初始化MPU9250，直到初始化完成
 
 //  /*----------------------------菜单调参----------------------------------*/
 	DisableInterrupts;                          //关闭所有中断，防止菜单调节过程中出现中断
 	Menu_Init();                                  //初始化菜单
 	while(!Menu_Work()) systick_delay_ms(200);    //菜单每200ms工作一次，并根据是否按下“关闭菜单”选项后（函数返回0）结束死循环
 	EnableInterrupts;
-	
-	PID_Dir.Param_Kd*=10;
 	
 //	Elema_Absorb(Elema_Left);
 //	Elema_Absorb(Elema_Right);
@@ -64,12 +62,13 @@ void Init_ALL(void)
 	MECANUM_Motor_Data.Speed_Y=0;
 	MECANUM_Motor_Data.Speed_GyroZ_Set=0;
 
-	//View_MPUddata();
+	View_MPUddata();
 	
-//	pit_init_ms(10);
-//	enable_irq(RIT_IRQn);
+	pint_init(PINT_CH0, A22, FALLING);		//MPU9250的INT引脚连接在A3上，设置为下降沿触发
+	set_irq_priority(PIN_INT0_IRQn,2);//设置优先级 越低优先级越高
 	
-	uart_rx_irq(USART_0,1); 
+	enable_irq(PIN_INT0_IRQn);		//开启引脚中断
+	uart_rx_irq(USART_0,1); 	//蓝牙遥控中断开启
 }
 
 void Read_ButtSwitData(void)
@@ -152,8 +151,8 @@ uint8 View_MPUddata(void)
   }
 	for(uint8 i=0;i<=20;i++)
 	{
-	Refresh_MPUTeam(DMP_MPL);
-	systick_delay_ms(10);
+		Refresh_MPUTeam(DMP_MPL);
+		systick_delay_ms(10);
 	}
 	LED_Fill(0x00);
   return 0;

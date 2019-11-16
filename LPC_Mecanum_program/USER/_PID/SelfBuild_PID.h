@@ -9,17 +9,17 @@ typedef struct
 	float Param_Ki;
 	float Param_Kd;
 	
-  float AidData_Set;
-	float Error_Sum;
-	float Param_measure;
+  double AidData_Set;
+	double Error_Sum;
+	double Param_measure;
 	
-	float Error;
-	float Error_last;
-	float Error_last_last;
+	double Error;
+	double Error_last;
+	double Error_last_last;
 	
-	int32 PID_Dynam_Out;
-	int32 PID_Incre_Return;
-	int32 PID_Local_Out;
+	double PID_Dynam_Out;
+	double PID_Incre_Return;
+	double PID_Local_Out;
 }PID_Param_Set;
 
 typedef enum
@@ -32,6 +32,6 @@ typedef enum
 extern PID_Param_Set PID_Speed;	//速度环PID参数
 extern PID_Param_Set PID_Dir;	  //方向环PID参数
 extern PID_Param_Set PID_Dis;	  //方向环PID参数
-int32 PID_Calcu	(float Aid_Data,float Measure_Data,PID_Param_Set* P_I_D,PID_Mode_Typedef PID_Mode);
+double PID_Calcu	(float Aid_Data,float Measure_Data,PID_Param_Set* P_I_D,PID_Mode_Typedef PID_Mode);
 
 #endif
