@@ -54,15 +54,20 @@ void PIN_INT0_DriverIRQHandler(void)
 		OLED_P6x8Flo(60, 4, MPU_Data.Yaw_Save, -3);
 		OLED_P6x8Int(0, 5, MECANUM_Motor_Data.Speed_GyroZ_Out, -5);
 		if(fabs(MPU_Data.Yaw_Real - MPU_Data.Yaw_Aid)>10)
-			MECANUM_Motor_Data.Speed_GyroZ_Out=RANGE(MECANUM_Motor_Data.Speed_GyroZ_Out,100,-100);	//限幅
+			MECANUM_Motor_Data.Speed_GyroZ_Out=RANGE(MECANUM_Motor_Data.Speed_GyroZ_Out,120,-120);	//限幅
 		else
-			MECANUM_Motor_Data.Speed_GyroZ_Out=RANGE(MECANUM_Motor_Data.Speed_GyroZ_Out,50,-50);	//限幅
+			MECANUM_Motor_Data.Speed_GyroZ_Out=RANGE(MECANUM_Motor_Data.Speed_GyroZ_Out,100,-100);	//限幅
 		
 		Wheel_Analysis();		//目标速度计算
 
 /********数据输出（至硬件）**/
     Motor_PWM_Set(9999);	//PWM赋值
 /**************************/
+		
+		printf("{A%d:%d:%d:%d}$",(int16)MECANUM_Motor_Data.Speed_X/100
+														,(int16)MECANUM_Motor_Data.Speed_Y/100
+														,(int16)MECANUM_Motor_Data.Speed_GyroZ_Out/7
+														,(int16)MPU_Data.Yaw);
     pit_clean();
 		disable_irq(RIT_IRQn);	//关闭计时
 		pit_deinit();
@@ -76,7 +81,7 @@ void FLEXCOMM0_DriverIRQHandler(void)
 		uint8 Data;
     flag = UART0_FIFO_FLAG;
 		static uint8 mode=1;
-		MECANUM_Motor_Data.Speed_All =3000;
+		MECANUM_Motor_Data.Speed_All =2000;
     uart_getchar(USART_0,&Data);
     if(flag & USART_FIFOINTSTAT_RXLVL_MASK)//接收FIFO达到设定水平（库默认设定水平 当接收FIFO有一个数据的时候触发中断）
     {
@@ -85,39 +90,39 @@ void FLEXCOMM0_DriverIRQHandler(void)
 			{
 				switch(Data)
 				{
-					case 'A': MECANUM_Motor_Data.Speed_X=0;		//前进
-										MECANUM_Motor_Data.Speed_Y=MECANUM_Motor_Data.Speed_All; break;
+					case 'A': MECANUM_Motor_Data.Speed_X_Real=0;		//前进
+										MECANUM_Motor_Data.Speed_Y_Real=MECANUM_Motor_Data.Speed_All; break;
 					
-					case 'H': MECANUM_Motor_Data.Speed_X=-MECANUM_Motor_Data.Speed_All/1.4;		//左前
-										MECANUM_Motor_Data.Speed_Y=MECANUM_Motor_Data.Speed_All/1.4; break;
+					case 'H': MECANUM_Motor_Data.Speed_X_Real=-MECANUM_Motor_Data.Speed_All/1.4;		//左前
+										MECANUM_Motor_Data.Speed_Y_Real=MECANUM_Motor_Data.Speed_All/1.4; break;
 					
-					case 'G': MECANUM_Motor_Data.Speed_X=-MECANUM_Motor_Data.Speed_All;	//左转
-										MECANUM_Motor_Data.Speed_Y=0;   break;
+					case 'G': MECANUM_Motor_Data.Speed_X_Real=-MECANUM_Motor_Data.Speed_All;	//左转
+										MECANUM_Motor_Data.Speed_Y_Real=0;   break;
 					
-					case 'F': MECANUM_Motor_Data.Speed_X=-MECANUM_Motor_Data.Speed_All/1.4;	//左后
-										MECANUM_Motor_Data.Speed_Y=-MECANUM_Motor_Data.Speed_All/1.4;   break;
+					case 'F': MECANUM_Motor_Data.Speed_X_Real=-MECANUM_Motor_Data.Speed_All/1.4;	//左后
+										MECANUM_Motor_Data.Speed_Y_Real=-MECANUM_Motor_Data.Speed_All/1.4;   break;
 					
-					case 'E': MECANUM_Motor_Data.Speed_X=0;		//后退
-										MECANUM_Motor_Data.Speed_Y=-MECANUM_Motor_Data.Speed_All;break;
+					case 'E': MECANUM_Motor_Data.Speed_X_Real=0;		//后退
+										MECANUM_Motor_Data.Speed_Y_Real=-MECANUM_Motor_Data.Speed_All;break;
 
-					case 'D': MECANUM_Motor_Data.Speed_X=MECANUM_Motor_Data.Speed_All/1.4;	//右后
-										MECANUM_Motor_Data.Speed_Y=-MECANUM_Motor_Data.Speed_All/1.4;   break;
+					case 'D': MECANUM_Motor_Data.Speed_X_Real=MECANUM_Motor_Data.Speed_All/1.4;	//右后
+										MECANUM_Motor_Data.Speed_Y_Real=-MECANUM_Motor_Data.Speed_All/1.4;   break;
 					
-					case 'C': MECANUM_Motor_Data.Speed_X=MECANUM_Motor_Data.Speed_All;		//右转
-										MECANUM_Motor_Data.Speed_Y=0;   break;
+					case 'C': MECANUM_Motor_Data.Speed_X_Real=MECANUM_Motor_Data.Speed_All;		//右转
+										MECANUM_Motor_Data.Speed_Y_Real=0;   break;
 
-					case 'B': MECANUM_Motor_Data.Speed_X=MECANUM_Motor_Data.Speed_All/1.4;	//右前
-										MECANUM_Motor_Data.Speed_Y=MECANUM_Motor_Data.Speed_All/1.4;   break;
+					case 'B': MECANUM_Motor_Data.Speed_X_Real=MECANUM_Motor_Data.Speed_All/1.4;	//右前
+										MECANUM_Motor_Data.Speed_Y_Real=MECANUM_Motor_Data.Speed_All/1.4;   break;
 										
-					case 'Z': MECANUM_Motor_Data.Speed_X=0;		//停止
-										MECANUM_Motor_Data.Speed_Y=0;
+					case 'Z': MECANUM_Motor_Data.Speed_X_Real=0;		//停止
+										MECANUM_Motor_Data.Speed_Y_Real=0;
 										MECANUM_Motor_Data.Speed_GyroZ_Set=0;					break;
 										
 					case 'X': MPU_Data.Yaw_Save=MPU_Data.Yaw;	
-										MPU_Data.Yaw_Aid=90; break;		//右转90度
+										MPU_Data.Yaw_Aid=15; break;		//右转90度
 										
 					case 'Y': MPU_Data.Yaw_Save=MPU_Data.Yaw;	
-										MPU_Data.Yaw_Aid=-90;	break;//左转90度
+										MPU_Data.Yaw_Aid=-15;	break;//左转90度
 										
 					case 'p':	Elema_Unabsorb(Elema_Mid);Servo_Down;systick_delay_ms(2000);Servo_Up;break;//放棋子
 					case 'o': Elema_Absorb(Elema_Mid);Servo_Down;systick_delay_ms(2000);Servo_Up;	break;//吸棋子
@@ -132,25 +137,25 @@ void FLEXCOMM0_DriverIRQHandler(void)
 			{
 				switch(Data)
 				{
-					case 'A': MECANUM_Motor_Data.Speed_X=0;		//前进
-										MECANUM_Motor_Data.Speed_Y=MECANUM_Motor_Data.Speed_All; break;
+					case 'A': MECANUM_Motor_Data.Speed_X_Real=0;		//前进
+										MECANUM_Motor_Data.Speed_Y_Real=MECANUM_Motor_Data.Speed_All; break;
 					
-					case 'E': MECANUM_Motor_Data.Speed_X=0;		//后退
-										MECANUM_Motor_Data.Speed_Y=-MECANUM_Motor_Data.Speed_All;break;
+					case 'E': MECANUM_Motor_Data.Speed_X_Real=0;		//后退
+										MECANUM_Motor_Data.Speed_Y_Real=-MECANUM_Motor_Data.Speed_All;break;
 
-					case 'G': MECANUM_Motor_Data.Speed_GyroZ_Out=-MECANUM_Motor_Data.Speed_All;	//顺时针
+					case 'G': MECANUM_Motor_Data.Speed_GyroZ_Out=-100;	//顺时针
 										break;
 				
-					case 'C': MECANUM_Motor_Data.Speed_GyroZ_Out=MECANUM_Motor_Data.Speed_All;			//逆时针
+					case 'C': MECANUM_Motor_Data.Speed_GyroZ_Out=100;			//逆时针
 										break;
 					
-					case 'Z': MECANUM_Motor_Data.Speed_X=0;		//停止
-										MECANUM_Motor_Data.Speed_Y=0;
+					case 'Z': MECANUM_Motor_Data.Speed_X_Real=0;		//停止
+										MECANUM_Motor_Data.Speed_Y_Real=0;
 										MECANUM_Motor_Data.Speed_GyroZ_Out=0;					break;
 										
-					case 'X': MECANUM_Motor_Data.Speed_All=1.4; break;		//高速
+					case 'X': MECANUM_Motor_Data.Speed_All=4000; break;		//高速
 										
-					case 'Y': MECANUM_Motor_Data.Speed_All=0.6;break;//低速
+					case 'Y': MECANUM_Motor_Data.Speed_All=2000;break;//低速
 					
 					case 'J': mode=1;break;
 					default : break;

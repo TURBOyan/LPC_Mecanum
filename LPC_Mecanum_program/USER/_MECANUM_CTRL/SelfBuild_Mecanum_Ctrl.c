@@ -1,4 +1,5 @@
 #include "SelfBuild_Mecanum_Ctrl.h"
+#include "math.h"
 #include "headfile.h"
 
 struct MECANUM_Motor_Data_Typedef MECANUM_Motor_Data;
@@ -19,10 +20,16 @@ uint8 Motor_PWM[2][Wheel_Sum+1]				={
 **************************************************************************/
 void Wheel_Analysis(void)	
 {
-        MECANUM_Motor_Data.SPEED_Set_cm_s[Right_Front]  = -MECANUM_Motor_Data.Speed_X + MECANUM_Motor_Data.Speed_Y-MECANUM_Motor_Data.Speed_GyroZ_Out*(a_PARAMETER_cm+b_PARAMETER_cm);
-        MECANUM_Motor_Data.SPEED_Set_cm_s[Left_Front]   = +MECANUM_Motor_Data.Speed_X + MECANUM_Motor_Data.Speed_Y+MECANUM_Motor_Data.Speed_GyroZ_Out*(a_PARAMETER_cm+b_PARAMETER_cm);
-	      MECANUM_Motor_Data.SPEED_Set_cm_s[Left_Back]    = -MECANUM_Motor_Data.Speed_X + MECANUM_Motor_Data.Speed_Y+MECANUM_Motor_Data.Speed_GyroZ_Out*(a_PARAMETER_cm+b_PARAMETER_cm);
-				MECANUM_Motor_Data.SPEED_Set_cm_s[Right_Back]   = +MECANUM_Motor_Data.Speed_X + MECANUM_Motor_Data.Speed_Y-MECANUM_Motor_Data.Speed_GyroZ_Out*(a_PARAMETER_cm+b_PARAMETER_cm);
+		MECANUM_Motor_Data.Speed_X=MECANUM_Motor_Data.Speed_X_Real*cos(MPU_Data.Yaw*0.0174533)
+															+MECANUM_Motor_Data.Speed_Y_Real*sin(MPU_Data.Yaw*0.0174533-3.1415926);
+	
+		MECANUM_Motor_Data.Speed_Y=MECANUM_Motor_Data.Speed_X_Real*sin(MPU_Data.Yaw*0.0174533)
+															+MECANUM_Motor_Data.Speed_Y_Real*cos(MPU_Data.Yaw*0.0174533);
+	
+		MECANUM_Motor_Data.SPEED_Set_cm_s[Right_Front]  = -MECANUM_Motor_Data.Speed_X + MECANUM_Motor_Data.Speed_Y-MECANUM_Motor_Data.Speed_GyroZ_Out*(a_PARAMETER_cm+b_PARAMETER_cm);
+		MECANUM_Motor_Data.SPEED_Set_cm_s[Left_Front]   = +MECANUM_Motor_Data.Speed_X + MECANUM_Motor_Data.Speed_Y+MECANUM_Motor_Data.Speed_GyroZ_Out*(a_PARAMETER_cm+b_PARAMETER_cm);
+		MECANUM_Motor_Data.SPEED_Set_cm_s[Left_Back]    = -MECANUM_Motor_Data.Speed_X + MECANUM_Motor_Data.Speed_Y+MECANUM_Motor_Data.Speed_GyroZ_Out*(a_PARAMETER_cm+b_PARAMETER_cm);
+		MECANUM_Motor_Data.SPEED_Set_cm_s[Right_Back]   = +MECANUM_Motor_Data.Speed_X + MECANUM_Motor_Data.Speed_Y-MECANUM_Motor_Data.Speed_GyroZ_Out*(a_PARAMETER_cm+b_PARAMETER_cm);
 }
 
 /**************************************************************************
@@ -49,16 +56,16 @@ void Wheel_Speed_Get_cm_s(void)
 
 void Wheel_Speed_Real_Get(void)
 {
-	MECANUM_Motor_Data.Speed_X_Real=(-MECANUM_Motor_Data.SPEED_Get_cm_s[Right_Front]
-																	+MECANUM_Motor_Data.SPEED_Get_cm_s[Left_Front]
-																	-MECANUM_Motor_Data.SPEED_Get_cm_s[Left_Back]
-																	+MECANUM_Motor_Data.SPEED_Get_cm_s[Right_Back])/4.0;
-	MECANUM_Motor_Data.Speed_Y_Real=(MECANUM_Motor_Data.SPEED_Get_cm_s[Right_Front]
-																	+MECANUM_Motor_Data.SPEED_Get_cm_s[Left_Front]
-																	+MECANUM_Motor_Data.SPEED_Get_cm_s[Left_Back]
-																	+MECANUM_Motor_Data.SPEED_Get_cm_s[Right_Back])/4.0;
-	MECANUM_Motor_Data.X_Dir=MECANUM_Motor_Data.Speed_X_Real<0?-1:(MECANUM_Motor_Data.Speed_X_Real==0?0:1);	//保存运动方向
-	MECANUM_Motor_Data.Y_Dir=MECANUM_Motor_Data.Speed_Y_Real<0?-1:(MECANUM_Motor_Data.Speed_Y_Real==0?0:1);
+//	MECANUM_Motor_Data.Speed_X_Real=(-MECANUM_Motor_Data.SPEED_Get_cm_s[Right_Front]
+//																	+MECANUM_Motor_Data.SPEED_Get_cm_s[Left_Front]
+//																	-MECANUM_Motor_Data.SPEED_Get_cm_s[Left_Back]
+//																	+MECANUM_Motor_Data.SPEED_Get_cm_s[Right_Back])/4.0;
+//	MECANUM_Motor_Data.Speed_Y_Real=(MECANUM_Motor_Data.SPEED_Get_cm_s[Right_Front]
+//																	+MECANUM_Motor_Data.SPEED_Get_cm_s[Left_Front]
+//																	+MECANUM_Motor_Data.SPEED_Get_cm_s[Left_Back]
+//																	+MECANUM_Motor_Data.SPEED_Get_cm_s[Right_Back])/4.0;
+//	MECANUM_Motor_Data.X_Dir=MECANUM_Motor_Data.Speed_X_Real<0?-1:(MECANUM_Motor_Data.Speed_X_Real==0?0:1);	//保存运动方向
+//	MECANUM_Motor_Data.Y_Dir=MECANUM_Motor_Data.Speed_Y_Real<0?-1:(MECANUM_Motor_Data.Speed_Y_Real==0?0:1);
 }
 
 /**************************************************************************

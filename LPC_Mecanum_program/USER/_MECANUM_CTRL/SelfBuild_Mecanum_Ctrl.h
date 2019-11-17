@@ -31,10 +31,10 @@ extern struct MECANUM_Motor_Data_Typedef
 	double PWM_Mid;
 	
 	double Speed_All;
-	double Speed_X;
+	double Speed_X;			//机械坐标
 	double Speed_Y;
 	
-	double Speed_X_Real;
+	double Speed_X_Real;		//无头模式坐标
 	double Speed_Y_Real;
 	
 	int8 X_Dir;
