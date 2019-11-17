@@ -29,16 +29,16 @@ void Init_ALL(void)
 	gpio_init(Switch_3,GPI,0,PULLUP);	
 	gpio_init(Switch_4,GPI,0,PULLUP);	
 	
-//	for(uint8 row=0;row<6;row++)//光电管初始化，管脚定义在SelfBuild_control.h内
-//	{
-//		for(uint8 col=0;col<6;col++)
-//		{
-//			if((uint8)(Gray[row][col])!=0xff)
-//			{
-//				gpio_init(Gray[row][col],GPI,0,PULLUP);	
-//			}
-//		}
-//	}
+	for(uint8 row=0;row<6;row++)//光电管初始化，管脚定义在SelfBuild_control.h内
+	{
+		for(uint8 col=0;col<6;col++)
+		{
+			if((uint8)(Gray[row][col])!=0xff)
+			{
+				gpio_init(Gray[row][col],GPI,0,PULLUP);	
+			}
+		}
+	}
 	
 	MECANUM_Motor_Data.PWM_Mid=3750;
 	for(WheelNum_Typedef num=0;num<Wheel_Sum;num++)		//电机相关初始化

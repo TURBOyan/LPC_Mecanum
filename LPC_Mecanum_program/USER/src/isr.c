@@ -46,6 +46,8 @@ void PIN_INT0_DriverIRQHandler(void)
 /***********数据获取*****/
 	//	Read_ButtSwitData();			//读取按键值
 		Refresh_MPUTeam(DMP_MPL);//等待三态角数据读取完成
+		
+	Read_GrayData(1);
 /***********************/
 		MPU_Data.Yaw_Real=Mpu_Normalization(MPU_Data.Yaw,MPU_Data.Yaw_Save);	//偏航角重设零点
 		MECANUM_Motor_Data.Speed_GyroZ_Out=PID_Calcu(MPU_Data.Yaw_Aid,MPU_Data.Yaw_Real,&PID_Dir,Local);	//角度闭环
