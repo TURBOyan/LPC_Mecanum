@@ -18,13 +18,13 @@ uint8 Motor_PWM[2][Wheel_Sum+1]				={
 入口参数：无
 返回  值：无
 **************************************************************************/
-void Wheel_Analysis(void)	
+void Wheel_Analysis(void)
 {
-		MECANUM_Motor_Data.Speed_X=MECANUM_Motor_Data.Speed_X_Real*cos(MPU_Data.Yaw*0.0174533)
-															+MECANUM_Motor_Data.Speed_Y_Real*sin(MPU_Data.Yaw*0.0174533-3.1415926);
+		MECANUM_Motor_Data.Speed_X=MECANUM_Motor_Data.Speed_X_Real*cos(MPU_Data.Yaw_MapZero*0.0174533)
+															+MECANUM_Motor_Data.Speed_Y_Real*sin(MPU_Data.Yaw_MapZero*0.0174533-3.1415926);
 	
-		MECANUM_Motor_Data.Speed_Y=MECANUM_Motor_Data.Speed_X_Real*sin(MPU_Data.Yaw*0.0174533)
-															+MECANUM_Motor_Data.Speed_Y_Real*cos(MPU_Data.Yaw*0.0174533);
+		MECANUM_Motor_Data.Speed_Y=MECANUM_Motor_Data.Speed_X_Real*sin(MPU_Data.Yaw_MapZero*0.0174533)
+															+MECANUM_Motor_Data.Speed_Y_Real*cos(MPU_Data.Yaw_MapZero*0.0174533);
 	
 		MECANUM_Motor_Data.SPEED_Set_cm_s[Right_Front]  = -MECANUM_Motor_Data.Speed_X + MECANUM_Motor_Data.Speed_Y-MECANUM_Motor_Data.Speed_GyroZ_Out*(a_PARAMETER_cm+b_PARAMETER_cm);
 		MECANUM_Motor_Data.SPEED_Set_cm_s[Left_Front]   = +MECANUM_Motor_Data.Speed_X + MECANUM_Motor_Data.Speed_Y+MECANUM_Motor_Data.Speed_GyroZ_Out*(a_PARAMETER_cm+b_PARAMETER_cm);

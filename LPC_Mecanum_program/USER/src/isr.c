@@ -32,11 +32,11 @@ void RIT_DriverIRQHandler(void)
 		}
 }
 
-void PIN_INT0_DriverIRQHandler(void)															
+void PIN_INT1_DriverIRQHandler(void)															
 {
-		PINT_IST_FLAG_CLEAR(PINT_CH0);
+		PINT_IST_FLAG_CLEAR(PINT_CH1);
 	
-		disable_irq(PIN_INT0_IRQn);		//暂时关闭中断
+		disable_irq(PIN_INT1_IRQn);		//暂时关闭中断
 	
 		pit_init_ms(10);		//开启10ms计时，防止本中断执行时间超过10ms
 		set_irq_priority(RIT_IRQn,0);
@@ -44,15 +44,24 @@ void PIN_INT0_DriverIRQHandler(void)
 	
 	/*********************这里放自己的控制代码******************************************************************************/
 /***********数据获取*****/
-	//	Read_ButtSwitData();			//读取按键值
+		Read_ButtSwitData();			//读取按键值
 		Refresh_MPUTeam(DMP_MPL);//等待三态角数据读取完成
-		
-		Read_GrayData(1);
-/***********************/
-		if(MECANUM_Motor_Data.Speed_GyroZ_Set == 0)
+		Read_GrayData(95,2,1);
+		calibration();
+	
+		if(Query_ButtSwitData(Button_Data,Button_Up_Data))		//如果按下上键，则重新校准地图坐标
 		{
-			MPU_Data.Yaw_Real=Mpu_Normalization(MPU_Data.Yaw,MPU_Data.Yaw_Save);	//偏航角重设零点
-			MECANUM_Motor_Data.Speed_GyroZ_Out=PID_Calcu(MPU_Data.Yaw_Aid,MPU_Data.Yaw_Real,&PID_Dir,Local);	//角度闭环
+			MPU_Data.Yaw_Save=MPU_Data.Yaw;
+			MPU_Data.Yaw_HeadZero_Aid=0;
+			MPU_Data.Yaw_MapZero_Save=0;
+		}
+		MPU_Data.Yaw_MapZero=Mpu_Normalization(MPU_Data.Yaw,MPU_Data.Yaw_Save);
+		
+/***********************/
+		if(MPU_Data.Yaw_CloseLoop_Flag)
+		{
+			MPU_Data.Yaw_HeadZero=Mpu_Normalization(MPU_Data.Yaw_MapZero,MPU_Data.Yaw_MapZero_Save);	//偏航角重新将车头设为零点
+			MECANUM_Motor_Data.Speed_GyroZ_Out=PID_Calcu(MPU_Data.Yaw_HeadZero_Aid,MPU_Data.Yaw_HeadZero,&PID_Dir,Local);	//角度闭环
 		}
 		else
 		{
@@ -79,7 +88,7 @@ void PIN_INT0_DriverIRQHandler(void)
 		disable_irq(RIT_IRQn);	//关闭计时
 		pit_deinit();
 		
-		enable_irq(PIN_INT0_IRQn);	//开启引脚中断，准备接受下次MPL数据
+		enable_irq(PIN_INT1_IRQn);	//开启引脚中断，准备接受下次MPL数据
 }
 
 void FLEXCOMM0_DriverIRQHandler(void)
@@ -124,18 +133,21 @@ void FLEXCOMM0_DriverIRQHandler(void)
 										MECANUM_Motor_Data.Speed_Y_Real=0;
 										MECANUM_Motor_Data.Speed_GyroZ_Set=0;					break;
 										
-					case 'X': MPU_Data.Yaw_Save=MPU_Data.Yaw;	
-										MPU_Data.Yaw_Aid=90; break;		//右转90度
+					case 'X': MPU_Data.Yaw_MapZero_Save=MPU_Data.Yaw_MapZero;	
+										MPU_Data.Yaw_HeadZero_Aid=90; break;		//右转90度
 										
-					case 'Y': MPU_Data.Yaw_Save=MPU_Data.Yaw;	
-										MPU_Data.Yaw_Aid=-90;	break;//左转90度
+					case 'Y': MPU_Data.Yaw_MapZero_Save=MPU_Data.Yaw_MapZero;	
+										MPU_Data.Yaw_HeadZero_Aid=-90;	break;//左转90度
 										
 					case 'p':	Elema_Unabsorb(Elema_Mid);Servo_Down;systick_delay_ms(2000);Servo_Up;break;//放棋子
 					case 'o': Elema_Absorb(Elema_Mid);Servo_Down;systick_delay_ms(2000);Servo_Up;	break;//吸棋子
 					case 'n': Elema_Unabsorb(Elema_Left);	break;//放左障碍
 					case 'm': Elema_Unabsorb(Elema_Right);	break;//放右障碍
 					
-					case 'K': mode=0;break;
+					case 'K': mode=0;
+										MPU_Data.Yaw_CloseLoop_Flag=0; //关闭偏航角闭环
+										MECANUM_Motor_Data.Speed_GyroZ_Set=0;
+										break;
 					default : break;
 				}
 			}
@@ -157,15 +169,18 @@ void FLEXCOMM0_DriverIRQHandler(void)
 					
 					case 'Z': MECANUM_Motor_Data.Speed_X_Real=0;		//停止
 										MECANUM_Motor_Data.Speed_Y_Real=0;
-										MECANUM_Motor_Data.Speed_GyroZ_Set=0;	
-										MPU_Data.Yaw_Save=MPU_Data.Yaw;		
-										MPU_Data.Yaw_Aid=0;					break;
+										MECANUM_Motor_Data.Speed_GyroZ_Set=0;			
+										break;
 										
-					case 'X': MECANUM_Motor_Data.Speed_All=4000; break;		//高速
+					case 'X': MECANUM_Motor_Data.Speed_All=2000; break;		//高速
 										
-					case 'Y': MECANUM_Motor_Data.Speed_All=2000;break;//低速
+					case 'Y': MECANUM_Motor_Data.Speed_All=500;break;//低速
 					
-					case 'J': mode=1;break;
+					case 'J': mode=1;
+										MPU_Data.Yaw_CloseLoop_Flag=1; //开启偏航角闭环
+										MPU_Data.Yaw_MapZero_Save=MPU_Data.Yaw_MapZero;	
+										MPU_Data.Yaw_HeadZero_Aid=0;
+										break;
 					default : break;
 				}
 			}

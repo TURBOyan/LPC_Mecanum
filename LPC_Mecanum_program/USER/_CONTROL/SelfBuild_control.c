@@ -61,14 +61,15 @@ void Init_ALL(void)
 	MECANUM_Motor_Data.Speed_X=0;
 	MECANUM_Motor_Data.Speed_Y=0;
 	MECANUM_Motor_Data.Speed_GyroZ_Set=0;
+	MPU_Data.Yaw_CloseLoop_Flag=1;
 
 	View_MPUddata();
 	
-	pint_init(PINT_CH0, A22, FALLING);		//MPU9250的INT引脚连接在A3上，设置为下降沿触发
-	set_irq_priority(PIN_INT0_IRQn,2);//设置优先级 越低优先级越高
+	pint_init(PINT_CH1, B0, FALLING);		//MPU9250的INT引脚连接在A3上，设置为下降沿触发
+	set_irq_priority(PIN_INT1_IRQn,1);//设置优先级 越低优先级越高
 	
-	enable_irq(PIN_INT0_IRQn);		//开启引脚中断
-	uart_rx_irq(USART_0,1); 	//蓝牙遥控中断开启
+	enable_irq(PIN_INT1_IRQn);		//开启引脚中断
+	uart_rx_irq(USART_0,2); 	//蓝牙遥控中断开启
 }
 
 void Read_ButtSwitData(void)
@@ -84,8 +85,13 @@ void Read_ButtSwitData(void)
 													(~gpio_get(Button_Mid)&0x01);
 }
 
-void Read_GrayData(uint8 show)
+void Read_GrayData(uint8 x,uint8 y,uint8 showflag)
 {
+	if(showflag)
+	{
+		if(x>92)x=92;
+		if(y>2)y=2;
+	}
 	for(uint8 row=0;row<6;row++)
 	{
 		for(uint8 col=0;col<6;col++)
@@ -93,7 +99,7 @@ void Read_GrayData(uint8 show)
 			if((uint8)(Gray[row][col])!=0xff)
 			{
 				Base_Data.Gray_Data[row][col]=gpio_get(Gray[row][col]);
-				if(show)OLED_P6x8Int(col*10 , row, Base_Data.Gray_Data[row][col], 1);
+				if(showflag)OLED_P6x8Int(col*6+x, row+y, Base_Data.Gray_Data[row][col], 1);
 			}
 		}
 	}
@@ -136,18 +142,18 @@ uint8 View_MPUddata(void)
   LED_P6x8Str(0, 0, "Pitch=");
   LED_P6x8Str(0, 1, "Roll=");
   LED_P6x8Str(0, 2, "Yaw=");
-	LED_P6x8Str(0, 3, "Yaw_Real=");
+	LED_P6x8Str(0, 3, "Yaw_MapZero=");
   while(1)
   {
 		  Read_ButtSwitData();
 			if(Query_ButtSwitData(Button_Data,Button_Up_Data))break;
 		  Refresh_MPUTeam(DMP_MPL);
 			if(Query_ButtSwitData(Button_Data,Button_Right_Data))MPU_Data.Yaw_Save=MPU_Data.Yaw;
-			MPU_Data.Yaw_Real=Mpu_Normalization(MPU_Data.Yaw,MPU_Data.Yaw_Save);		
+			MPU_Data.Yaw_MapZero=Mpu_Normalization(MPU_Data.Yaw,MPU_Data.Yaw_Save);		
 		  OLED_P6x8Flo(60, 0, MPU_Data.Pitch, -3);
 		  OLED_P6x8Flo(60, 1, MPU_Data.Roll, -3);
 		  OLED_P6x8Flo(60, 2, MPU_Data.Yaw, -3);
-		  OLED_P6x8Flo(60, 3, MPU_Data.Yaw_Real, -3); 
+		  OLED_P6x8Flo(60, 3, MPU_Data.Yaw_MapZero, -3); 
   }
 	for(uint8 i=0;i<=20;i++)
 	{
@@ -156,4 +162,43 @@ uint8 View_MPUddata(void)
 	}
 	LED_Fill(0x00);
   return 0;
+}
+
+void calibration(void)
+{
+	static uint16 flag;
+	uint8 Gray_upleft;
+	uint8 Gray_dowmright;
+	if(		Base_Data.Gray_Data[2][0]==1
+			&&Base_Data.Gray_Data[1][0]==1
+			&&Base_Data.Gray_Data[0][0]==1
+			&&Base_Data.Gray_Data[0][1]==1
+			&&Base_Data.Gray_Data[0][2]==1
+	
+			&&Base_Data.Gray_Data[3][5]==1
+			&&Base_Data.Gray_Data[4][5]==1
+			&&Base_Data.Gray_Data[5][5]==1
+			&&Base_Data.Gray_Data[5][4]==1
+			&&Base_Data.Gray_Data[5][3]==1
+		)
+	{
+				return;
+	}
+	Gray_upleft  =  Base_Data.Gray_Data[2][0]
+								 +Base_Data.Gray_Data[1][0]
+								 +Base_Data.Gray_Data[0][0]
+								 +Base_Data.Gray_Data[0][1]
+								 +Base_Data.Gray_Data[0][2];
+	Gray_dowmright=	Base_Data.Gray_Data[3][5]
+								 +Base_Data.Gray_Data[4][5]
+								 +Base_Data.Gray_Data[5][5]
+								 +Base_Data.Gray_Data[5][4]
+								 +Base_Data.Gray_Data[5][3];
+	if(flag==0
+		&&Gray_upleft>Gray_dowmright)
+	{
+		
+	}
+	
+		
 }
