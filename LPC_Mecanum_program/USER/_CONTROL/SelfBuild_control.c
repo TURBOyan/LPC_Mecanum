@@ -57,7 +57,7 @@ void Init_ALL(void)
 	
 //	Elema_Absorb(Elema_Left);
 //	Elema_Absorb(Elema_Right);
-	MECANUM_Motor_Data.Speed_All=0;
+	MECANUM_Motor_Data.Speed_All=2000;
 	MECANUM_Motor_Data.Speed_X=0;
 	MECANUM_Motor_Data.Speed_Y=0;
 	MECANUM_Motor_Data.Speed_GyroZ_Set=0;
