@@ -27,15 +27,12 @@ extern struct Base_Data_Typedef	//»ù´¡Êý¾Ý
 	uint8 Gray_Data_Fall[6][6];
 }Base_Data;
  
-extern PIN_enum Gray[6][6];
-
 #define Query_ButtSwitData(ButtOrSwit,Data) ((Base_Data.ButtOrSwit & Data)==Data)
 
 void Init_ALL(void);
+void DataSend(uint8 AllowFlag);
 void Read_ButtSwitData(void);
-void Read_GrayData(uint8 x,uint8 y,uint8 showflag);
-void Save_GrayData(uint8 data_new[6][6],uint8 data_save[6][6]);
-void Judge_GrayData(void);
 uint8 View_MPUddata(void);
-void calibration(void);
+void MPU_Yaw_Closeloop(void);
+
 #endif

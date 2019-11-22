@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>.\CMSIS;.\Drives\common;.\Drives\inc;.\seekfree;.\USER\inc;.\USER\_OLEDMenu;.\USER\_SONIC;.\USER\_PID;.\USER\_BALANCE;.\USER\_CONTROL;.\USER\_ELECTRON;.\USER\_CAMERA;.\USER\_ELECTRON\_MCP41;.\USER\_UI;.\USER\_MECANUM_CTRL;.\USER\_OLED;.\USER\_DATAHELPER;.\USER\MPU9250\MPU_ForUser;.\USER\MPU9250\MPU9250-Lock\driver\eMPL;.\USER\MPU9250\MPU9250-Lock\driver\include;.\USER\MPU9250\MPU9250-Lock\driver\stm32L;.\USER\MPU9250\MPU9250-Lock\eMPL-hal;.\USER\MPU9250\MPU9250-Lock\mllite;.\USER\MPU9250\MPU9250-Lock\mpl;.\USER\MPU9250\MPU9250-Lock\MPU9250;.\USER\MPU9250\MPU9250-Lock\IIC</IncludePath>
+              <IncludePath>.\CMSIS;.\Drives\common;.\Drives\inc;.\seekfree;.\USER\inc;.\USER\_OLEDMenu;.\USER\_SONIC;.\USER\_PID;.\USER\_BALANCE;.\USER\_CONTROL;.\USER\_ELECTRON;.\USER\_CAMERA;.\USER\_ELECTRON\_MCP41;.\USER\_UI;.\USER\_MECANUM_CTRL;.\USER\_OLED;.\USER\_DATAHELPER;.\USER\MPU9250\MPU_ForUser;.\USER\MPU9250\MPU9250-Lock\driver\eMPL;.\USER\MPU9250\MPU9250-Lock\driver\include;.\USER\MPU9250\MPU9250-Lock\driver\stm32L;.\USER\MPU9250\MPU9250-Lock\eMPL-hal;.\USER\MPU9250\MPU9250-Lock\mllite;.\USER\MPU9250\MPU9250-Lock\mpl;.\USER\MPU9250\MPU9250-Lock\MPU9250;.\USER\MPU9250\MPU9250-Lock\IIC;.\USER\_GRAY_CTRL</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -620,6 +620,11 @@
               <FilePath>.\USER\_CONTROL\SelfBuild_control.h</FilePath>
             </File>
             <File>
+              <FileName>Selfbuild_GrayCtrl.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\USER\_GRAY_CTRL\Selfbuild_GrayCtrl.h</FilePath>
+            </File>
+            <File>
               <FileName>SelfBuild_PID.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\USER\_PID\SelfBuild_PID.h</FilePath>
@@ -678,6 +683,11 @@
               <FileName>SelfBuild_control.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\USER\_CONTROL\SelfBuild_control.c</FilePath>
+            </File>
+            <File>
+              <FileName>Selfbuild_GrayCtrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\_GRAY_CTRL\Selfbuild_GrayCtrl.c</FilePath>
             </File>
             <File>
               <FileName>SelfBuild_PID.c</FileName>

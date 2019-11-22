@@ -64,6 +64,8 @@
 #include "SelfBuild_OLEDMenu.h"
 #include "SelfBuild_Mecanum_Ctrl.h"
 #include "SelfBuild_control.h"
+#include "Selfbuild_GrayCtrl.h"
+
 
 #include "MPU_ForUser.h"
 

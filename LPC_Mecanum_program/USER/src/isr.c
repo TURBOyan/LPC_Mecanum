@@ -20,6 +20,34 @@
 #include "headfile.h"
 #include "isr.h"
 
+void PIN_INT1_DriverIRQHandler(void)															
+{
+		PINT_IST_FLAG_CLEAR(PINT_CH1);
+		disable_irq(PIN_INT1_IRQn);		//暂时关闭中断
+		pit_init_ms(10);		//开启10ms计时，防止本中断执行时间超过10ms
+		set_irq_priority(RIT_IRQn,0);
+		enable_irq(RIT_IRQn);
+	
+/*********************以上放自己的控制代码******************************************************************************/
+
+		Read_ButtSwitData();			//读取按键值
+		Refresh_MPUTeam(DMP_MPL); //读取三态角
+		Read_GrayData(95,2,1);		//读取光电管值
+		Gray_Calibration();				//光电管精确控制
+		MPU_Yaw_Closeloop();  		//偏航角闭环控制
+	
+		Wheel_Analysis();					//目标速度计算
+    Motor_PWM_Set(9999);			//PWM赋值
+	
+/*********************以上放自己的控制代码******************************************************************************/	
+	
+		DataSend(0);//上位机数据发送，1为开启，0为关闭
+    pit_clean();						//清除定时器计时
+		disable_irq(RIT_IRQn);	//关闭计时
+		pit_deinit();						//反初始化
+		enable_irq(PIN_INT1_IRQn);	//开启引脚中断，准备接受下次MPL数据
+}
+
 void RIT_DriverIRQHandler(void)
 {
     PIT_FLAG_CLEAR;
@@ -30,65 +58,6 @@ void RIT_DriverIRQHandler(void)
 			LED_P6x8Str(20, 3, "MPU-Interrupt");			//MPU9250的中断服务函数执行时间不能超过10ms，否则将超时警告
 			LED_P6x8Str(10, 4, "function TIMEOUT!!!!");
 		}
-}
-
-void PIN_INT1_DriverIRQHandler(void)															
-{
-		PINT_IST_FLAG_CLEAR(PINT_CH1);
-	
-		disable_irq(PIN_INT1_IRQn);		//暂时关闭中断
-	
-		pit_init_ms(10);		//开启10ms计时，防止本中断执行时间超过10ms
-		set_irq_priority(RIT_IRQn,0);
-		enable_irq(RIT_IRQn);
-	
-	/*********************这里放自己的控制代码******************************************************************************/
-/***********数据获取*****/
-		Read_ButtSwitData();			//读取按键值
-		Refresh_MPUTeam(DMP_MPL);//等待三态角数据读取完成
-		Read_GrayData(95,2,1);
-		calibration();
-	
-		if(Query_ButtSwitData(Button_Data,Button_Up_Data))		//如果按下上键，则重新校准地图坐标
-		{
-			MPU_Data.Yaw_Save=MPU_Data.Yaw;
-			MPU_Data.Yaw_HeadZero_Aid=0;
-			MPU_Data.Yaw_MapZero_Save=0;
-		}
-		MPU_Data.Yaw_MapZero=Mpu_Normalization(MPU_Data.Yaw,MPU_Data.Yaw_Save);
-		
-/***********************/
-		if(MPU_Data.Yaw_CloseLoop_Flag)
-		{
-			MPU_Data.Yaw_HeadZero=Mpu_Normalization(MPU_Data.Yaw_MapZero,MPU_Data.Yaw_MapZero_Save);	//偏航角重新将车头设为零点
-			MECANUM_Motor_Data.Speed_GyroZ_Out=PID_Calcu(MPU_Data.Yaw_HeadZero_Aid,MPU_Data.Yaw_HeadZero,&PID_Dir,Local);	//角度闭环
-		}
-		else
-		{
-			MECANUM_Motor_Data.Speed_GyroZ_Out=MECANUM_Motor_Data.Speed_GyroZ_Set;
-		}
-	
-//		OLED_P6x8Flo(60, 2, MPU_Data.Yaw_Aid, -3);
-//		OLED_P6x8Flo(60, 3, MPU_Data.Yaw_Real, -3);
-//		OLED_P6x8Flo(60, 4, MPU_Data.Yaw_Save, -3);
-//		OLED_P6x8Int(0, 5, MECANUM_Motor_Data.Speed_GyroZ_Out, -5);
-		MECANUM_Motor_Data.Speed_GyroZ_Out=RANGE(MECANUM_Motor_Data.Speed_GyroZ_Out,100,-100);	//限幅
-		
-		Wheel_Analysis();		//目标速度计算
-
-/********数据输出（至硬件）**/
-    Motor_PWM_Set(9999);	//PWM赋值
-/**************************/
-		
-//		printf("{A%d:%d:%d:%d}$",(int16)MECANUM_Motor_Data.Speed_X/100				//参数上传
-//														,(int16)MECANUM_Motor_Data.Speed_Y/100
-//														,(int16)MECANUM_Motor_Data.Speed_GyroZ_Out/7
-//														,(int16)MPU_Data.Yaw);
-    pit_clean();
-		disable_irq(RIT_IRQn);	//关闭计时
-		pit_deinit();
-		
-		enable_irq(PIN_INT1_IRQn);	//开启引脚中断，准备接受下次MPL数据
 }
 
 void FLEXCOMM0_DriverIRQHandler(void)

@@ -20,6 +20,7 @@ uint8 Motor_PWM[2][Wheel_Sum+1]				={
 **************************************************************************/
 void Wheel_Analysis(void)
 {
+		MECANUM_Motor_Data.Speed_GyroZ_Out=RANGE(MECANUM_Motor_Data.Speed_GyroZ_Out,100,-100);	//оч╥Ы
 		MECANUM_Motor_Data.Speed_X=MECANUM_Motor_Data.Speed_X_Real*cos(MPU_Data.Yaw_MapZero*0.0174533)
 															+MECANUM_Motor_Data.Speed_Y_Real*sin(MPU_Data.Yaw_MapZero*0.0174533-3.1415926);
 	

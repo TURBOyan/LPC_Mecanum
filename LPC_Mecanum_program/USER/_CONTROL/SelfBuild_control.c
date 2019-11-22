@@ -2,17 +2,11 @@
 #include <string.h>
 
 struct Base_Data_Typedef Base_Data;	//基础数据
+	
 
-PIN_enum Gray[6][6]={		//光电管位置（第一行为车头）
-{B31, A0, B11, B15 , A2,B30},
-{A6,0xff,0xff,0xff,0xff,B16},
-{A19,0xff,0xff,0xff,0xff,A5},
-{A10 ,0xff,0xff,0xff,0xff,A18},	
-{B20,0xff,0xff,0xff,0xff,A17},
-{B19,B18 , B6 ,A21 , A20 ,B28},
-};
 
-void Init_ALL(void)
+
+void Init_ALL(void)		//全车初始化
 {
 //	Beep_Init;	//蜂鸣器
 //	Servo_Init;	//磁铁舵机
@@ -40,7 +34,7 @@ void Init_ALL(void)
 		}
 	}
 	
-	MECANUM_Motor_Data.PWM_Mid=3750;
+
 	for(WheelNum_Typedef num=0;num<Wheel_Sum;num++)		//电机相关初始化
 	{
 		ctimer_pwm_init(Motor_PWM[0][(uint8)num],250,MECANUM_Motor_Data.PWM_Mid);  //正转PWM
@@ -57,12 +51,7 @@ void Init_ALL(void)
 	
 //	Elema_Absorb(Elema_Left);
 //	Elema_Absorb(Elema_Right);
-	MECANUM_Motor_Data.Speed_All=2000;
-	MECANUM_Motor_Data.Speed_X=0;
-	MECANUM_Motor_Data.Speed_Y=0;
-	MECANUM_Motor_Data.Speed_GyroZ_Set=0;
-	MPU_Data.Yaw_CloseLoop_Flag=1;
-
+	
 	View_MPUddata();
 	
 	pint_init(PINT_CH1, B0, FALLING);		//MPU9250的INT引脚连接在A3上，设置为下降沿触发
@@ -70,9 +59,25 @@ void Init_ALL(void)
 	
 	enable_irq(PIN_INT1_IRQn);		//开启引脚中断
 	uart_rx_irq(USART_0,2); 	//蓝牙遥控中断开启
+	
+	DisableInterrupts;  
 }
 
-void Read_ButtSwitData(void)
+void DataSend(uint8 AllowFlag)
+{
+	if(AllowFlag)
+	{
+		int16 data[4];
+		data[0]=(int16)MECANUM_Motor_Data.Speed_X/100;
+		data[1]=(int16)MECANUM_Motor_Data.Speed_Y/100;
+		data[2]=(int16)MECANUM_Motor_Data.Speed_GyroZ_Out/7;
+		data[3]=(int16)MPU_Data.Yaw;
+		printf("{A%d:%d:%d:%d}$",data[0],data[1],data[2],data[3]);			//参数上传
+	}
+}
+
+
+void Read_ButtSwitData(void)  //读取按键和拨码开关值
 {
 		Base_Data.Switch_Data=((~gpio_get(Switch_1)<<3)&0x08)  |	//拨码开关数据保存在Base_Data.Switch_Data结构体内
 													((~gpio_get(Switch_2)<<2)&0x04)  |
@@ -83,56 +88,6 @@ void Read_ButtSwitData(void)
 													((~gpio_get(Button_Left)<<2)&0x04)  |
 													((~gpio_get(Button_Right)<<1)&0x02) |
 													(~gpio_get(Button_Mid)&0x01);
-}
-
-void Read_GrayData(uint8 x,uint8 y,uint8 showflag)
-{
-	if(showflag)
-	{
-		if(x>92)x=92;
-		if(y>2)y=2;
-	}
-	for(uint8 row=0;row<6;row++)
-	{
-		for(uint8 col=0;col<6;col++)
-		{
-			if((uint8)(Gray[row][col])!=0xff)
-			{
-				Base_Data.Gray_Data[row][col]=gpio_get(Gray[row][col]);
-				if(showflag)OLED_P6x8Int(col*6+x, row+y, Base_Data.Gray_Data[row][col], 1);
-			}
-		}
-	}
-}
-
-void Save_GrayData(uint8 data_new[6][6],uint8 data_save[6][6])
-{
-	for(uint8 row=0;row<6;row++)
-	{
-		for(uint8 col=0;col<6;col++)
-		{
-			data_save[row][col]=data_new[row][col];
-		}
-	}
-}
-
-void Judge_GrayData(void)
-{
-	for(uint8 row=0;row<6;row++)
-	{
-		for(uint8 col=0;col<6;col++)
-		{
-			if(Base_Data.Gray_Data[row][col]<Base_Data.Gray_Data_Last[row][col])//如果上次光电管判断到白线而这次没有则下降沿置一
-				Base_Data.Gray_Data_Fall[row][col]=1;
-			else if(Base_Data.Gray_Data[row][col]>Base_Data.Gray_Data_Last[row][col])//如果这次光电管判断到白线而上次没有则上升沿置一
-				Base_Data.Gray_Data_Rise[row][col]=1;
-			else
-			{
-				Base_Data.Gray_Data_Fall[row][col]=0;
-				Base_Data.Gray_Data_Rise[row][col]=0;
-			}
-		}
-	}
 }
 
 
@@ -164,41 +119,28 @@ uint8 View_MPUddata(void)
   return 0;
 }
 
-void calibration(void)
+void MPU_Yaw_Closeloop(void)
 {
-	static uint16 flag;
-	uint8 Gray_upleft;
-	uint8 Gray_dowmright;
-	if(		Base_Data.Gray_Data[2][0]==1
-			&&Base_Data.Gray_Data[1][0]==1
-			&&Base_Data.Gray_Data[0][0]==1
-			&&Base_Data.Gray_Data[0][1]==1
-			&&Base_Data.Gray_Data[0][2]==1
-	
-			&&Base_Data.Gray_Data[3][5]==1
-			&&Base_Data.Gray_Data[4][5]==1
-			&&Base_Data.Gray_Data[5][5]==1
-			&&Base_Data.Gray_Data[5][4]==1
-			&&Base_Data.Gray_Data[5][3]==1
-		)
-	{
-				return;
-	}
-	Gray_upleft  =  Base_Data.Gray_Data[2][0]
-								 +Base_Data.Gray_Data[1][0]
-								 +Base_Data.Gray_Data[0][0]
-								 +Base_Data.Gray_Data[0][1]
-								 +Base_Data.Gray_Data[0][2];
-	Gray_dowmright=	Base_Data.Gray_Data[3][5]
-								 +Base_Data.Gray_Data[4][5]
-								 +Base_Data.Gray_Data[5][5]
-								 +Base_Data.Gray_Data[5][4]
-								 +Base_Data.Gray_Data[5][3];
-	if(flag==0
-		&&Gray_upleft>Gray_dowmright)
-	{
+		if(Query_ButtSwitData(Button_Data,Button_Up_Data))		//如果按下上键，则重新校准地图坐标
+		{
+			MPU_Data.Yaw_Save=MPU_Data.Yaw;
+			MPU_Data.Yaw_HeadZero_Aid=0;
+			MPU_Data.Yaw_MapZero_Save=0;
+		}
+		MPU_Data.Yaw_MapZero=Mpu_Normalization(MPU_Data.Yaw,MPU_Data.Yaw_Save);
 		
-	}
-	
+		if(MPU_Data.Yaw_CloseLoop_Flag)		//如果角度闭环标志位被置位，则执行角度闭环
+		{
+			MPU_Data.Yaw_HeadZero=Mpu_Normalization(MPU_Data.Yaw_MapZero,MPU_Data.Yaw_MapZero_Save);	//偏航角重新将车头设为零点
+			MECANUM_Motor_Data.Speed_GyroZ_Out=PID_Calcu(MPU_Data.Yaw_HeadZero_Aid,MPU_Data.Yaw_HeadZero,&PID_Dir,Local);	//角度闭环
+		}
+		else
+		{
+			MECANUM_Motor_Data.Speed_GyroZ_Out=MECANUM_Motor_Data.Speed_GyroZ_Set;
+		}
 		
+//		OLED_P6x8Flo(60, 2, MPU_Data.Yaw_Aid, -3);
+//		OLED_P6x8Flo(60, 3, MPU_Data.Yaw_Real, -3);
+//		OLED_P6x8Flo(60, 4, MPU_Data.Yaw_Save, -3);
+//		OLED_P6x8Int(0, 5, MECANUM_Motor_Data.Speed_GyroZ_Out, -5);
 }
