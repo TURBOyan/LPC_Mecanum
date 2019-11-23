@@ -2,9 +2,6 @@
 #include <string.h>
 
 struct Base_Data_Typedef Base_Data;	//基础数据
-	
-
-
 
 void Init_ALL(void)		//全车初始化
 {
@@ -22,6 +19,11 @@ void Init_ALL(void)		//全车初始化
 	gpio_init(Switch_2,GPI,0,PULLUP);
 	gpio_init(Switch_3,GPI,0,PULLUP);	
 	gpio_init(Switch_4,GPI,0,PULLUP);	
+	
+	memset(&Base_Data,0,sizeof(Base_Data));		//将所有会用到的结构体初始化为0
+	memset(&MECANUM_Motor_Data,0,sizeof(MECANUM_Motor_Data));
+	memset(&MPU_Data,0,sizeof(MPU_Data));
+	MECANUM_Motor_Data.PWM_Mid=3750;				//电机PWM中值
 	
 	for(uint8 row=0;row<6;row++)//光电管初始化，管脚定义在SelfBuild_control.h内
 	{
@@ -47,7 +49,6 @@ void Init_ALL(void)		//全车初始化
 	DisableInterrupts;                          //关闭所有中断，防止菜单调节过程中出现中断
 	Menu_Init();                                  //初始化菜单
 	while(!Menu_Work()) systick_delay_ms(200);    //菜单每200ms工作一次，并根据是否按下“关闭菜单”选项后（函数返回0）结束死循环
-	EnableInterrupts;
 	
 //	Elema_Absorb(Elema_Left);
 //	Elema_Absorb(Elema_Right);
@@ -63,7 +64,7 @@ void Init_ALL(void)		//全车初始化
 	DisableInterrupts;  
 }
 
-void DataSend(uint8 AllowFlag)
+void DataSend(uint8 AllowFlag)		//置1位允许发送
 {
 	if(AllowFlag)
 	{
@@ -121,12 +122,6 @@ uint8 View_MPUddata(void)
 
 void MPU_Yaw_Closeloop(void)
 {
-		if(Query_ButtSwitData(Button_Data,Button_Up_Data))		//如果按下上键，则重新校准地图坐标
-		{
-			MPU_Data.Yaw_Save=MPU_Data.Yaw;
-			MPU_Data.Yaw_HeadZero_Aid=0;
-			MPU_Data.Yaw_MapZero_Save=0;
-		}
 		MPU_Data.Yaw_MapZero=Mpu_Normalization(MPU_Data.Yaw,MPU_Data.Yaw_Save);
 		
 		if(MPU_Data.Yaw_CloseLoop_Flag)		//如果角度闭环标志位被置位，则执行角度闭环
@@ -143,4 +138,72 @@ void MPU_Yaw_Closeloop(void)
 //		OLED_P6x8Flo(60, 3, MPU_Data.Yaw_Real, -3);
 //		OLED_P6x8Flo(60, 4, MPU_Data.Yaw_Save, -3);
 //		OLED_P6x8Int(0, 5, MECANUM_Motor_Data.Speed_GyroZ_Out, -5);
+}
+
+uint8 Distance_Coarse(int8* X_Now,int8* Y_Now,int8 X_Set,int8 Y_Set)
+{
+	static double Distance_SetX,Distance_SetY;
+	static uint8 Continue_Flag=0;
+	
+	if(Continue_Flag==0										//当设定的坐标和此时的坐标发生变化时,开始粗调
+		&&((*X_Now!=X_Set) || (*Y_Now!=Y_Set)))
+	{
+		Continue_Flag=1;
+		MECANUM_Motor_Data.Distance_X_Real = 0;
+		MECANUM_Motor_Data.Distance_Y_Real = 0;
+		Distance_SetX = (X_Set-*X_Now)*50;
+		Distance_SetY = (Y_Set-*Y_Now)*50;
+	}
+	
+	if(	 Continue_Flag == 1					//当接近目标坐标时，停止粗调，返回1
+		&&(MECANUM_Motor_Data.Distance_X_Real >Distance_SetX-1)
+		&&(MECANUM_Motor_Data.Distance_X_Real <Distance_SetX+1)
+		&&(MECANUM_Motor_Data.Distance_Y_Real >Distance_SetY-1)
+		&&(MECANUM_Motor_Data.Distance_Y_Real <Distance_SetY+1)
+		)
+	{
+		Continue_Flag =0;
+		MECANUM_Motor_Data.Distance_X_Real = 0;
+		MECANUM_Motor_Data.Distance_Y_Real = 0;
+		MECANUM_Motor_Data.Speed_X_Real=0;
+		MECANUM_Motor_Data.Speed_Y_Real=0;
+		*X_Now=X_Set;
+		*Y_Now=Y_Set;
+		return 1;
+	}
+	
+	if(Continue_Flag == 1)	//当允许粗调时，粗调一次，并返回0
+	{
+		MECANUM_Motor_Data.Speed_X_Real=10*PID_Calcu	(Distance_SetX,MECANUM_Motor_Data.Distance_X_Real,&PID_Dis[0],Local);
+		MECANUM_Motor_Data.Speed_Y_Real=10*PID_Calcu	(Distance_SetY,MECANUM_Motor_Data.Distance_Y_Real,&PID_Dis[1],Local);
+
+	//分别对相对地图的X、Y速度分量设置缓慢启动，缓慢停止，和限速
+		if(fabs(MECANUM_Motor_Data.Distance_X_Real)<=10)		//地图X方向
+		{
+			MECANUM_Motor_Data.Speed_X_Real=RANGE(MECANUM_Motor_Data.Speed_X_Real,500,-500);
+		}
+		else if((Distance_SetX-MECANUM_Motor_Data.Distance_X_Real)>10)
+		{
+			MECANUM_Motor_Data.Speed_X_Real=RANGE(MECANUM_Motor_Data.Speed_X_Real,MECANUM_Motor_Data.Speed_All,-MECANUM_Motor_Data.Speed_All);
+		}
+		else
+		{
+			MECANUM_Motor_Data.Speed_X_Real=RANGE(MECANUM_Motor_Data.Speed_X_Real,500,-500);
+		}
+		
+		if(fabs(MECANUM_Motor_Data.Distance_Y_Real)<=10)	//地图Y方向
+		{
+			MECANUM_Motor_Data.Speed_Y_Real=RANGE(MECANUM_Motor_Data.Speed_Y_Real,500,-500);
+		}
+		else if((Distance_SetY-MECANUM_Motor_Data.Distance_Y_Real)>10)
+		{
+			MECANUM_Motor_Data.Speed_Y_Real=RANGE(MECANUM_Motor_Data.Speed_Y_Real,MECANUM_Motor_Data.Speed_All,-MECANUM_Motor_Data.Speed_All);
+		}
+		else
+		{
+			MECANUM_Motor_Data.Speed_Y_Real=RANGE(MECANUM_Motor_Data.Speed_Y_Real,500,-500);
+		}
+			
+	return 0;
+	}
 }

@@ -25,6 +25,8 @@ extern struct Base_Data_Typedef	//»ù´¡Êý¾Ý
 	uint8 Gray_Data_Last[6][6];
 	uint8 Gray_Data_Rise[6][6];
 	uint8 Gray_Data_Fall[6][6];
+	
+	uint8 Gray_Correct_Allow;
 }Base_Data;
  
 #define Query_ButtSwitData(ButtOrSwit,Data) ((Base_Data.ButtOrSwit & Data)==Data)
@@ -34,5 +36,6 @@ void DataSend(uint8 AllowFlag);
 void Read_ButtSwitData(void);
 uint8 View_MPUddata(void);
 void MPU_Yaw_Closeloop(void);
+uint8 Distance_Coarse(int8* X_Now,int8* Y_Now,int8 X_Set,int8 Y_Set);
 
 #endif

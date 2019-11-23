@@ -27,17 +27,66 @@ void PIN_INT1_DriverIRQHandler(void)
 		pit_init_ms(10);		//开启10ms计时，防止本中断执行时间超过10ms
 		set_irq_priority(RIT_IRQn,0);
 		enable_irq(RIT_IRQn);
-	
+		static int8 x,y;
+		static uint8 count;
 /*********************以上放自己的控制代码******************************************************************************/
 
 		Read_ButtSwitData();			//读取按键值
 		Refresh_MPUTeam(DMP_MPL); //读取三态角
 		Read_GrayData(95,2,1);		//读取光电管值
-		Gray_Calibration();				//光电管精确控制
-		MPU_Yaw_Closeloop();  		//偏航角闭环控制
 	
-		Wheel_Analysis();					//目标速度计算
+//		if(Distance_Coarse(&MECANUM_Motor_Data.Distance_X_Real,
+//										&MECANUM_Motor_Data.Distance_Y_Real,
+//										MECANUM_Motor_Data.Distance_X_Real_Set,
+//										MECANUM_Motor_Data.Distance_Y_Real_Set)	//如果粗调完成，则进行光电管细调
+//			)
+//		{
+//				Gray_Calibration();				//光电管细调
+//		}
+		count++;
+		if(count >=20)
+		{
+			count=0;
+			if(Query_ButtSwitData(Button_Data,Button_Up_Data))y++;
+			if(Query_ButtSwitData(Button_Data,Button_Down_Data))y--;
+			if(Query_ButtSwitData(Button_Data,Button_Right_Data))x++;
+			if(Query_ButtSwitData(Button_Data,Button_Left_Data))x--;
+			if(Query_ButtSwitData(Button_Data,Button_Mid_Data))
+			{
+				MECANUM_Motor_Data.Car_Coord_Set.x=x;
+				MECANUM_Motor_Data.Car_Coord_Set.y=y;
+			}
+		}
+		
+		if(Distance_Coarse(&MECANUM_Motor_Data.Car_Coord_Now.x
+											,&MECANUM_Motor_Data.Car_Coord_Now.y
+											, MECANUM_Motor_Data.Car_Coord_Set.x
+											, MECANUM_Motor_Data.Car_Coord_Set.y)
+			)
+		{
+			
+		}
+		
+//		if(Query_ButtSwitData(Button_Data,Button_Up_Data))		//如果按下上键，则重新校准地图坐标
+//		{
+//			MPU_Data.Yaw_Save=MPU_Data.Yaw;
+//			MPU_Data.Yaw_HeadZero_Aid=0;
+//			MPU_Data.Yaw_MapZero_Save=0;
+//		}
+		MPU_Yaw_Closeloop();  		//偏航角闭环控制
+		
+		Wheel_Analysis();					//目标速度计算 
     Motor_PWM_Set(9999);			//PWM赋值
+	
+		OLED_P6x8Int(0, 0, MECANUM_Motor_Data.Distance_X_Real, -5);
+		OLED_P6x8Int(0, 1, MECANUM_Motor_Data.Distance_Y_Real, -5);
+		OLED_P6x8Int(0, 2, MECANUM_Motor_Data.Speed_X_Real, -5);
+		OLED_P6x8Int(0, 3, MECANUM_Motor_Data.Speed_Y_Real, -5);		
+		OLED_P6x8Int(0, 4, x, -1);
+		OLED_P6x8Int(15, 4, y, -1);		
+
+
+		
 	
 /*********************以上放自己的控制代码******************************************************************************/	
 	
@@ -153,7 +202,6 @@ void FLEXCOMM0_DriverIRQHandler(void)
 					default : break;
 				}
 			}
-			LED_P6x8Char(0,0,Data);
     }
     if(flag & USART_FIFOINTSTAT_RXERR_MASK)//接收FIFO错误
     {
@@ -293,6 +341,3 @@ SHA_DriverIRQHandler
 SMARTCARD0_DriverIRQHandler
 SMARTCARD1_DriverIRQHandler
 */
-
-
-

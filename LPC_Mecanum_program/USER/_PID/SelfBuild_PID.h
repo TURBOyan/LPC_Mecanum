@@ -31,7 +31,7 @@ typedef enum
 
 extern PID_Param_Set PID_Speed;	//速度环PID参数
 extern PID_Param_Set PID_Dir;	  //方向环PID参数
-extern PID_Param_Set PID_Dis;	  //方向环PID参数
+extern PID_Param_Set PID_Dis[2];	  //距离环PID参数
 double PID_Calcu	(float Aid_Data,float Measure_Data,PID_Param_Set* P_I_D,PID_Mode_Typedef PID_Mode);
 
 #endif

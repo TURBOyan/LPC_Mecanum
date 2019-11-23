@@ -21,16 +21,20 @@ uint8 Motor_PWM[2][Wheel_Sum+1]				={
 void Wheel_Analysis(void)
 {
 		MECANUM_Motor_Data.Speed_GyroZ_Out=RANGE(MECANUM_Motor_Data.Speed_GyroZ_Out,100,-100);	//限幅
+	
 		MECANUM_Motor_Data.Speed_X=MECANUM_Motor_Data.Speed_X_Real*cos(MPU_Data.Yaw_MapZero*0.0174533)
 															+MECANUM_Motor_Data.Speed_Y_Real*sin(MPU_Data.Yaw_MapZero*0.0174533-3.1415926);
 	
 		MECANUM_Motor_Data.Speed_Y=MECANUM_Motor_Data.Speed_X_Real*sin(MPU_Data.Yaw_MapZero*0.0174533)
 															+MECANUM_Motor_Data.Speed_Y_Real*cos(MPU_Data.Yaw_MapZero*0.0174533);
 	
-		MECANUM_Motor_Data.SPEED_Set_cm_s[Right_Front]  = -MECANUM_Motor_Data.Speed_X + MECANUM_Motor_Data.Speed_Y-MECANUM_Motor_Data.Speed_GyroZ_Out*(a_PARAMETER_cm+b_PARAMETER_cm);
-		MECANUM_Motor_Data.SPEED_Set_cm_s[Left_Front]   = +MECANUM_Motor_Data.Speed_X + MECANUM_Motor_Data.Speed_Y+MECANUM_Motor_Data.Speed_GyroZ_Out*(a_PARAMETER_cm+b_PARAMETER_cm);
-		MECANUM_Motor_Data.SPEED_Set_cm_s[Left_Back]    = -MECANUM_Motor_Data.Speed_X + MECANUM_Motor_Data.Speed_Y+MECANUM_Motor_Data.Speed_GyroZ_Out*(a_PARAMETER_cm+b_PARAMETER_cm);
-		MECANUM_Motor_Data.SPEED_Set_cm_s[Right_Back]   = +MECANUM_Motor_Data.Speed_X + MECANUM_Motor_Data.Speed_Y-MECANUM_Motor_Data.Speed_GyroZ_Out*(a_PARAMETER_cm+b_PARAMETER_cm);
+		MECANUM_Motor_Data.SPEED_Set_cm_s[Right_Front]  = -(int16)MECANUM_Motor_Data.Speed_X + (int16)MECANUM_Motor_Data.Speed_Y-(int16)MECANUM_Motor_Data.Speed_GyroZ_Out*(a_PARAMETER_cm+b_PARAMETER_cm);
+		MECANUM_Motor_Data.SPEED_Set_cm_s[Left_Front]   = +(int16)MECANUM_Motor_Data.Speed_X + (int16)MECANUM_Motor_Data.Speed_Y+(int16)MECANUM_Motor_Data.Speed_GyroZ_Out*(a_PARAMETER_cm+b_PARAMETER_cm);
+		MECANUM_Motor_Data.SPEED_Set_cm_s[Left_Back]    = -(int16)MECANUM_Motor_Data.Speed_X + (int16)MECANUM_Motor_Data.Speed_Y+(int16)MECANUM_Motor_Data.Speed_GyroZ_Out*(a_PARAMETER_cm+b_PARAMETER_cm);
+		MECANUM_Motor_Data.SPEED_Set_cm_s[Right_Back]   = +(int16)MECANUM_Motor_Data.Speed_X + (int16)MECANUM_Motor_Data.Speed_Y-(int16)MECANUM_Motor_Data.Speed_GyroZ_Out*(a_PARAMETER_cm+b_PARAMETER_cm);
+	
+		MECANUM_Motor_Data.Distance_X_Real+=MECANUM_Motor_Data.Speed_X_Real*0.00020668372;
+		MECANUM_Motor_Data.Distance_Y_Real+=MECANUM_Motor_Data.Speed_Y_Real*0.00020668372;
 }
 
 /**************************************************************************
@@ -93,8 +97,10 @@ void Motor_PWM_Set(int16 PWM_MAX)	//PWM输出
 {
 	for(WheelNum_Typedef num=0;num<Wheel_Sum;num++)
 	{
-		MECANUM_Motor_Data.SPEED_Set_cm_s[(uint8)num]=MECANUM_Motor_Data.SPEED_Set_cm_s[(uint8)num]*0.125;
-		MECANUM_Motor_Data.SPEED_Set_cm_s[(uint8)num]=RANGE(MECANUM_Motor_Data.SPEED_Set_cm_s[(uint8)num],1250,-1250);		//PWM限幅
-		ctimer_pwm_duty(Motor_PWM[0][(uint8)num],(uint32)(MECANUM_Motor_Data.SPEED_Set_cm_s[(uint8)num]+MECANUM_Motor_Data.PWM_Mid));
+		MECANUM_Motor_Data.SPEED_Set_cm_s[(uint8)num]=(int16)(MECANUM_Motor_Data.SPEED_Set_cm_s[(uint8)num]*0.125);
+		MECANUM_Motor_Data.SPEED_Set_cm_s[(uint8)num]=RANGE(MECANUM_Motor_Data.SPEED_Set_cm_s[(uint8)num],1000,-1000);		//PWM限幅
+		MECANUM_Motor_Data.SPEED_Set_cm_s[(uint8)num]+=MECANUM_Motor_Data.PWM_Mid
+																									+((MECANUM_Motor_Data.SPEED_Set_cm_s[(uint8)num]<0)?-50:(MECANUM_Motor_Data.SPEED_Set_cm_s[(uint8)num]>0?50:0));
+		ctimer_pwm_duty(Motor_PWM[0][(uint8)num],(uint16)MECANUM_Motor_Data.SPEED_Set_cm_s[(uint8)num]);
 	}
 }

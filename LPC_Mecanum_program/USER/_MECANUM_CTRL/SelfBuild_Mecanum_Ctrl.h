@@ -8,12 +8,6 @@
 
 typedef enum
 {
-//	Right_Back =0,
-//	Right_Front    ,
-//	Left_Back  ,
-//	Left_Front   ,
-	
-	
 	Left_Front =0,
 	Left_Back    ,
 	Right_Front  ,
@@ -21,6 +15,18 @@ typedef enum
 	
 	Wheel_Sum,
 }WheelNum_Typedef;
+
+typedef struct
+{
+      int8 x;
+      int8 y;
+}INT8_XY;
+
+typedef struct
+{
+      double x;
+      double y;
+}DOUBLE_XY;
 
 extern struct MECANUM_Motor_Data_Typedef
 {
@@ -34,8 +40,15 @@ extern struct MECANUM_Motor_Data_Typedef
 	double Speed_X;			//机械坐标
 	double Speed_Y;
 	
-	double Speed_X_Real;		//无头模式坐标
+	double Speed_X_Real;		//相对地图坐标
 	double Speed_Y_Real;
+	
+	double Distance_X_Real,	//相对地图平移距离
+				 Distance_Y_Real;
+	
+	INT8_XY Car_Coord_Now,
+					Car_Coord_Set;
+				
 	
 	int8 X_Dir;
 	int8 Y_Dir;

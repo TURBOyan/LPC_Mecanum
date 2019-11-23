@@ -118,9 +118,6 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>8&lt;(
-?ew8&lt;(
-</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -159,16 +156,32 @@
           <Type>0</Type>
           <LineNumber>109</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>2386</Address>
+          <Address>31456</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>F:\2019 smart car competition\浜斿瓙妫嬫満鍣ㄤ汉\program_from_Github\TURBOFactory\LPC_Mecanum_program\USER\src\isr.c</Filename>
+          <Filename>F:\2019 smart car competition\浜斿瓙妫嬫満鍣ㄤ汉\LPC_Mecanum\LPC_Mecanum_program\USER\src\isr.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression>\\LPC546XX\USER/src/isr.c\109</Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>155</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>29954</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>F:\2019 smart car competition\浜斿瓙妫嬫満鍣ㄤ汉\LPC_Mecanum\LPC_Mecanum_program\USER\_CONTROL\SelfBuild_control.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\LPC546XX\USER/_CONTROL/SelfBuild_control.c\155</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -785,7 +798,7 @@
 
   <Group>
     <GroupName>user_h</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -1325,7 +1338,7 @@
 
   <Group>
     <GroupName>MPU9250</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

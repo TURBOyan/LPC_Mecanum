@@ -37,6 +37,13 @@ __STATIC_INLINE void Menu_Data_Init(void)
 	Menu[1].Sub_Title[1] = "D";
 	Menu[1].Sub_Type[1] =-4;
 
+	Menu[2].Title = "PID_Dis";
+	Menu[2].Sub_Value[0] = &PID_Dis[0].Param_Kp;
+	Menu[2].Sub_Title[0] = "P";
+	Menu[2].Sub_Type[0] =-4;
+	Menu[2].Sub_Value[1] = &PID_Dis[0].Param_Kd;
+	Menu[2].Sub_Title[1] = "D";
+	Menu[2].Sub_Type[1] =-4;
 }
 
 /******************修改部分从这行结束，其他程序请不要随意改动******************/

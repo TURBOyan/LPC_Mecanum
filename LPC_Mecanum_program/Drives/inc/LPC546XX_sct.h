@@ -100,7 +100,7 @@ typedef enum
 #define SCT0_OUTPUT_CH2_DUTY_MAX     10000                                   //SCT0 OUTPUT2 PWM最大占空比  最大占空比越大占空比的步进值越小
 #define SCT0_OUTPUT_CH3_DUTY_MAX     10000                                   //SCT0 OUTPUT3 PWM最大占空比  最大占空比越大占空比的步进值越小
 #define SCT0_OUTPUT_CH4_DUTY_MAX     10000                                   //SCT0 OUTPUT4 PWM最大占空比  最大占空比越大占空比的步进值越小
-#define SCT0_OUTPUT_CH5_DUTY_MAX     10000                                   //SCT0 OUTPUT5 PWM最大占空比  最大占空比越大占空比的步进值越小
+#define SCT0_OUTPUT_CH5_DUTY_MAX     10000                                  //SCT0 OUTPUT5 PWM最大占空比  最大占空比越大占空比的步进值越小
 #define SCT0_OUTPUT_CH6_DUTY_MAX     10000                                   //SCT0 OUTPUT6 PWM最大占空比  最大占空比越大占空比的步进值越小
 #define SCT0_OUTPUT_CH7_DUTY_MAX     10000                                   //SCT0 OUTPUT7 PWM最大占空比  最大占空比越大占空比的步进值越小
 #define SCT0_OUTPUT_CH8_DUTY_MAX     10000                                   //SCT0 OUTPUT8 PWM最大占空比  最大占空比越大占空比的步进值越小
