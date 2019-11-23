@@ -69,8 +69,8 @@ void DataSend(uint8 AllowFlag)		//置1位允许发送
 	if(AllowFlag)
 	{
 		int16 data[4];
-		data[0]=(int16)MECANUM_Motor_Data.Speed_X/100;
-		data[1]=(int16)MECANUM_Motor_Data.Speed_Y/100;
+		data[0]=(int16)MECANUM_Motor_Data.Speed.x/100;
+		data[1]=(int16)MECANUM_Motor_Data.Speed.y/100;
 		data[2]=(int16)MECANUM_Motor_Data.Speed_GyroZ_Out/7;
 		data[3]=(int16)MPU_Data.Yaw;
 		printf("{A%d:%d:%d:%d}$",data[0],data[1],data[2],data[3]);			//参数上传
@@ -149,61 +149,73 @@ uint8 Distance_Coarse(int8* X_Now,int8* Y_Now,int8 X_Set,int8 Y_Set)
 		&&((*X_Now!=X_Set) || (*Y_Now!=Y_Set)))
 	{
 		Continue_Flag=1;
-		MECANUM_Motor_Data.Distance_X_Real = 0;
-		MECANUM_Motor_Data.Distance_Y_Real = 0;
+		MECANUM_Motor_Data.Distance_Real.x = 0;
+		MECANUM_Motor_Data.Distance_Real.y = 0;
 		Distance_SetX = (X_Set-*X_Now)*50;
 		Distance_SetY = (Y_Set-*Y_Now)*50;
 	}
 	
-	if(	 Continue_Flag == 1					//当接近目标坐标时，停止粗调，返回1
-		&&(MECANUM_Motor_Data.Distance_X_Real >Distance_SetX-1)
-		&&(MECANUM_Motor_Data.Distance_X_Real <Distance_SetX+1)
-		&&(MECANUM_Motor_Data.Distance_Y_Real >Distance_SetY-1)
-		&&(MECANUM_Motor_Data.Distance_Y_Real <Distance_SetY+1)
+	if(	 Continue_Flag == 1					//当接近目标坐标时，停止粗调，开始细调
+		&&(MECANUM_Motor_Data.Distance_Real.x >Distance_SetX-1)
+		&&(MECANUM_Motor_Data.Distance_Real.x <Distance_SetX+1)
+		&&(MECANUM_Motor_Data.Distance_Real.y >Distance_SetY-1)
+		&&(MECANUM_Motor_Data.Distance_Real.y <Distance_SetY+1)
 		)
 	{
-		Continue_Flag =0;
-		MECANUM_Motor_Data.Distance_X_Real = 0;
-		MECANUM_Motor_Data.Distance_Y_Real = 0;
-		MECANUM_Motor_Data.Speed_X_Real=0;
-		MECANUM_Motor_Data.Speed_Y_Real=0;
-		*X_Now=X_Set;
-		*Y_Now=Y_Set;
-		return 1;
+		Continue_Flag =2;
+		MECANUM_Motor_Data.Speed_Real.x=0;
+		MECANUM_Motor_Data.Speed_Real.y=0;
+
 	}
 	
-	if(Continue_Flag == 1)	//当允许粗调时，粗调一次，并返回0
+	if(Continue_Flag == 1)	//当允许粗调时，开始粗调
 	{
-		MECANUM_Motor_Data.Speed_X_Real=10*PID_Calcu	(Distance_SetX,MECANUM_Motor_Data.Distance_X_Real,&PID_Dis[0],Local);
-		MECANUM_Motor_Data.Speed_Y_Real=10*PID_Calcu	(Distance_SetY,MECANUM_Motor_Data.Distance_Y_Real,&PID_Dis[1],Local);
+		MECANUM_Motor_Data.Speed_Real.x=10*PID_Calcu	(Distance_SetX,MECANUM_Motor_Data.Distance_Real.x,&PID_Dis[0],Local);
+		MECANUM_Motor_Data.Speed_Real.y=10*PID_Calcu	(Distance_SetY,MECANUM_Motor_Data.Distance_Real.y,&PID_Dis[1],Local);
 
 	//分别对相对地图的X、Y速度分量设置缓慢启动，缓慢停止，和限速
-		if(fabs(MECANUM_Motor_Data.Distance_X_Real)<=10)		//地图X方向
+		if(fabs(MECANUM_Motor_Data.Distance_Real.x)<=10)		//地图X方向//启动时
 		{
-			MECANUM_Motor_Data.Speed_X_Real=RANGE(MECANUM_Motor_Data.Speed_X_Real,500,-500);
+			MECANUM_Motor_Data.Speed_Real.x=RANGE(MECANUM_Motor_Data.Speed_Real.x,500,-500);
 		}
-		else if((Distance_SetX-MECANUM_Motor_Data.Distance_X_Real)>10)
+		else if(fabs(Distance_SetX-MECANUM_Motor_Data.Distance_Real.x)>10)//将要接近目标坐标时
 		{
-			MECANUM_Motor_Data.Speed_X_Real=RANGE(MECANUM_Motor_Data.Speed_X_Real,MECANUM_Motor_Data.Speed_All,-MECANUM_Motor_Data.Speed_All);
+			MECANUM_Motor_Data.Speed_Real.x=RANGE(MECANUM_Motor_Data.Speed_Real.x,MECANUM_Motor_Data.Speed_All,-MECANUM_Motor_Data.Speed_All);
 		}
 		else
 		{
-			MECANUM_Motor_Data.Speed_X_Real=RANGE(MECANUM_Motor_Data.Speed_X_Real,500,-500);
+			MECANUM_Motor_Data.Speed_Real.x=RANGE(MECANUM_Motor_Data.Speed_Real.x,500,-500);
 		}
 		
-		if(fabs(MECANUM_Motor_Data.Distance_Y_Real)<=10)	//地图Y方向
+		if(fabs(MECANUM_Motor_Data.Distance_Real.y)<=10)	//地图Y方向//启动时
 		{
-			MECANUM_Motor_Data.Speed_Y_Real=RANGE(MECANUM_Motor_Data.Speed_Y_Real,500,-500);
+			MECANUM_Motor_Data.Speed_Real.y=RANGE(MECANUM_Motor_Data.Speed_Real.y,500,-500);
 		}
-		else if((Distance_SetY-MECANUM_Motor_Data.Distance_Y_Real)>10)
+		else if(fabs(Distance_SetY-MECANUM_Motor_Data.Distance_Real.y)>10)//将要接近目标坐标时
 		{
-			MECANUM_Motor_Data.Speed_Y_Real=RANGE(MECANUM_Motor_Data.Speed_Y_Real,MECANUM_Motor_Data.Speed_All,-MECANUM_Motor_Data.Speed_All);
+			MECANUM_Motor_Data.Speed_Real.y=RANGE(MECANUM_Motor_Data.Speed_Real.y,MECANUM_Motor_Data.Speed_All,-MECANUM_Motor_Data.Speed_All);
 		}
 		else
 		{
-			MECANUM_Motor_Data.Speed_Y_Real=RANGE(MECANUM_Motor_Data.Speed_Y_Real,500,-500);
+			MECANUM_Motor_Data.Speed_Real.y=RANGE(MECANUM_Motor_Data.Speed_Real.y,500,-500);
 		}
-			
-	return 0;
 	}
+	
+	if(Continue_Flag == 2
+	 &&Gray_Calibration()		//光电管细调
+		)
+	{
+		Continue_Flag=0;
+		MECANUM_Motor_Data.Distance_Real.x = 0;
+		MECANUM_Motor_Data.Distance_Real.y = 0;
+		MECANUM_Motor_Data.Speed_Real.x=0;
+		MECANUM_Motor_Data.Speed_Real.y=0;
+		*X_Now=X_Set;		//保存位置
+		*Y_Now=Y_Set;
+		
+		MPU_Data.Yaw_Save=MPU_Data.Yaw;	//重新校准地图坐标
+		MPU_Data.Yaw_HeadZero_Aid=0;
+		MPU_Data.Yaw_MapZero_Save=0;
+	}
+
 }

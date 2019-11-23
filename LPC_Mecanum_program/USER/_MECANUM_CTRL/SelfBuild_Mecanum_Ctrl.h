@@ -37,21 +37,14 @@ extern struct MECANUM_Motor_Data_Typedef
 	double PWM_Mid;
 	
 	double Speed_All;
-	double Speed_X;			//机械坐标
-	double Speed_Y;
+	DOUBLE_XY Speed;			//机械坐标
 	
-	double Speed_X_Real;		//相对地图坐标
-	double Speed_Y_Real;
+	DOUBLE_XY Speed_Real;		//相对地图坐标
 	
-	double Distance_X_Real,	//相对地图平移距离
-				 Distance_Y_Real;
+	DOUBLE_XY Distance_Real;	//相对地图平移距离
 	
 	INT8_XY Car_Coord_Now,
 					Car_Coord_Set;
-				
-	
-	int8 X_Dir;
-	int8 Y_Dir;
 	
 	double Speed_GyroZ_Out;
 	double Speed_GyroZ_Set;

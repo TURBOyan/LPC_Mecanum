@@ -29,65 +29,62 @@ void PIN_INT1_DriverIRQHandler(void)
 		enable_irq(RIT_IRQn);
 		static int8 x,y;
 		static uint8 count;
-/*********************以上放自己的控制代码******************************************************************************/
-
+/*********************以下放自己的控制代码******************************************************************************/
+/**																																																								  ***/
+/**																																																								  ***/
+/**																																																								  ***/
 		Read_ButtSwitData();			//读取按键值
 		Refresh_MPUTeam(DMP_MPL); //读取三态角
-		Read_GrayData(95,2,1);		//读取光电管值
-	
-//		if(Distance_Coarse(&MECANUM_Motor_Data.Distance_X_Real,
-//										&MECANUM_Motor_Data.Distance_Y_Real,
-//										MECANUM_Motor_Data.Distance_X_Real_Set,
-//										MECANUM_Motor_Data.Distance_Y_Real_Set)	//如果粗调完成，则进行光电管细调
-//			)
-//		{
-//				Gray_Calibration();				//光电管细调
-//		}
-		count++;
-		if(count >=20)
-		{
-			count=0;
-			if(Query_ButtSwitData(Button_Data,Button_Up_Data))y++;
-			if(Query_ButtSwitData(Button_Data,Button_Down_Data))y--;
-			if(Query_ButtSwitData(Button_Data,Button_Right_Data))x++;
-			if(Query_ButtSwitData(Button_Data,Button_Left_Data))x--;
-			if(Query_ButtSwitData(Button_Data,Button_Mid_Data))
-			{
-				MECANUM_Motor_Data.Car_Coord_Set.x=x;
-				MECANUM_Motor_Data.Car_Coord_Set.y=y;
-			}
-		}
-		
-		if(Distance_Coarse(&MECANUM_Motor_Data.Car_Coord_Now.x
+		Read_GrayData(95,2,1);		//读取光电管值，并显示在95列，第3行的位置
+
+/**//*****************************临时代码***********************************************/
+/**/		count++;
+/**/		if(count >=20)
+/**/		{
+/**/			count=0;
+/**/			if(Query_ButtSwitData(Button_Data,Button_Up_Data))y++;
+/**/			if(Query_ButtSwitData(Button_Data,Button_Down_Data))y--;
+/**/			if(Query_ButtSwitData(Button_Data,Button_Right_Data))x++;
+/**/			if(Query_ButtSwitData(Button_Data,Button_Left_Data))x--;
+/**/			if(Query_ButtSwitData(Button_Data,Button_Mid_Data))
+/**/			{
+/**/				MECANUM_Motor_Data.Car_Coord_Set.x=x;
+/**/				MECANUM_Motor_Data.Car_Coord_Set.y=y;
+/**/			}
+/**/		}
+/**//**************************************************************************************/	
+
+		Distance_Coarse(&MECANUM_Motor_Data.Car_Coord_Now.x		//距离粗调+光电管细调
 											,&MECANUM_Motor_Data.Car_Coord_Now.y
 											, MECANUM_Motor_Data.Car_Coord_Set.x
-											, MECANUM_Motor_Data.Car_Coord_Set.y)
-			)
-		{
-			
-		}
+											, MECANUM_Motor_Data.Car_Coord_Set.y);
 		
-//		if(Query_ButtSwitData(Button_Data,Button_Up_Data))		//如果按下上键，则重新校准地图坐标
-//		{
-//			MPU_Data.Yaw_Save=MPU_Data.Yaw;
-//			MPU_Data.Yaw_HeadZero_Aid=0;
-//			MPU_Data.Yaw_MapZero_Save=0;
-//		}
+			//如果按下上键，并且拨码开关1是开启状态，则重新校准地图坐标
+		if(Query_ButtSwitData(Button_Data,Button_Up_Data) && Query_ButtSwitData(Switch_Data,Switch_1_Data))	
+		{
+			MPU_Data.Yaw_Save=MPU_Data.Yaw;
+			MPU_Data.Yaw_HeadZero_Aid=0;
+			MPU_Data.Yaw_MapZero_Save=0;
+		}
 		MPU_Yaw_Closeloop();  		//偏航角闭环控制
 		
 		Wheel_Analysis();					//目标速度计算 
     Motor_PWM_Set(9999);			//PWM赋值
 	
-		OLED_P6x8Int(0, 0, MECANUM_Motor_Data.Distance_X_Real, -5);
-		OLED_P6x8Int(0, 1, MECANUM_Motor_Data.Distance_Y_Real, -5);
-		OLED_P6x8Int(0, 2, MECANUM_Motor_Data.Speed_X_Real, -5);
-		OLED_P6x8Int(0, 3, MECANUM_Motor_Data.Speed_Y_Real, -5);		
-		OLED_P6x8Int(0, 4, x, -1);
-		OLED_P6x8Int(15, 4, y, -1);		
-
-
-		
 	
+/**//*****************************临时代码***********************************************/
+/**/		OLED_P6x8Int(0, 0, MECANUM_Motor_Data.Distance_Real.x, -5);
+/**/		OLED_P6x8Int(0, 1, MECANUM_Motor_Data.Distance_Real.y, -5);
+/**/		OLED_P6x8Int(0, 2, MECANUM_Motor_Data.Speed_Real.x, -5);
+/**/		OLED_P6x8Int(0, 3, MECANUM_Motor_Data.Speed_Real.y, -5);		
+/**/		OLED_P6x8Int(0, 4, x, -1);
+/**/		OLED_P6x8Int(15, 4, y, -1);	
+/**//**************************************************************************************/	
+		
+		
+/**																																																								  ***/
+/**																																																								  ***/		
+/**																																																								  ***/	
 /*********************以上放自己的控制代码******************************************************************************/	
 	
 		DataSend(0);//上位机数据发送，1为开启，0为关闭
@@ -123,32 +120,32 @@ void FLEXCOMM0_DriverIRQHandler(void)
 			{
 				switch(Data)
 				{
-					case 'A': MECANUM_Motor_Data.Speed_X_Real=0;		//前进
-										MECANUM_Motor_Data.Speed_Y_Real=MECANUM_Motor_Data.Speed_All; break;
+					case 'A': MECANUM_Motor_Data.Speed_Real.x=0;		//前进
+										MECANUM_Motor_Data.Speed_Real.y=MECANUM_Motor_Data.Speed_All; break;
 					
-					case 'H': MECANUM_Motor_Data.Speed_X_Real=-MECANUM_Motor_Data.Speed_All/1.4;		//左前
-										MECANUM_Motor_Data.Speed_Y_Real=MECANUM_Motor_Data.Speed_All/1.4; break;
+					case 'H': MECANUM_Motor_Data.Speed_Real.x=-MECANUM_Motor_Data.Speed_All/1.4;		//左前
+										MECANUM_Motor_Data.Speed_Real.y=MECANUM_Motor_Data.Speed_All/1.4; break;
 					
-					case 'G': MECANUM_Motor_Data.Speed_X_Real=-MECANUM_Motor_Data.Speed_All;	//左转
-										MECANUM_Motor_Data.Speed_Y_Real=0;   break;
+					case 'G': MECANUM_Motor_Data.Speed_Real.x=-MECANUM_Motor_Data.Speed_All;	//左转
+										MECANUM_Motor_Data.Speed_Real.y=0;   break;
 					
-					case 'F': MECANUM_Motor_Data.Speed_X_Real=-MECANUM_Motor_Data.Speed_All/1.4;	//左后
-										MECANUM_Motor_Data.Speed_Y_Real=-MECANUM_Motor_Data.Speed_All/1.4;   break;
+					case 'F': MECANUM_Motor_Data.Speed_Real.x=-MECANUM_Motor_Data.Speed_All/1.4;	//左后
+										MECANUM_Motor_Data.Speed_Real.y=-MECANUM_Motor_Data.Speed_All/1.4;   break;
 					
-					case 'E': MECANUM_Motor_Data.Speed_X_Real=0;		//后退
-										MECANUM_Motor_Data.Speed_Y_Real=-MECANUM_Motor_Data.Speed_All;break;
+					case 'E': MECANUM_Motor_Data.Speed_Real.x=0;		//后退
+										MECANUM_Motor_Data.Speed_Real.y=-MECANUM_Motor_Data.Speed_All;break;
 
-					case 'D': MECANUM_Motor_Data.Speed_X_Real=MECANUM_Motor_Data.Speed_All/1.4;	//右后
-										MECANUM_Motor_Data.Speed_Y_Real=-MECANUM_Motor_Data.Speed_All/1.4;   break;
+					case 'D': MECANUM_Motor_Data.Speed_Real.x=MECANUM_Motor_Data.Speed_All/1.4;	//右后
+										MECANUM_Motor_Data.Speed_Real.y=-MECANUM_Motor_Data.Speed_All/1.4;   break;
 					
-					case 'C': MECANUM_Motor_Data.Speed_X_Real=MECANUM_Motor_Data.Speed_All;		//右转
-										MECANUM_Motor_Data.Speed_Y_Real=0;   break;
+					case 'C': MECANUM_Motor_Data.Speed_Real.x=MECANUM_Motor_Data.Speed_All;		//右转
+										MECANUM_Motor_Data.Speed_Real.y=0;   break;
 
-					case 'B': MECANUM_Motor_Data.Speed_X_Real=MECANUM_Motor_Data.Speed_All/1.4;	//右前
-										MECANUM_Motor_Data.Speed_Y_Real=MECANUM_Motor_Data.Speed_All/1.4;   break;
+					case 'B': MECANUM_Motor_Data.Speed_Real.x=MECANUM_Motor_Data.Speed_All/1.4;	//右前
+										MECANUM_Motor_Data.Speed_Real.y=MECANUM_Motor_Data.Speed_All/1.4;   break;
 										
-					case 'Z': MECANUM_Motor_Data.Speed_X_Real=0;		//停止
-										MECANUM_Motor_Data.Speed_Y_Real=0;
+					case 'Z': MECANUM_Motor_Data.Speed_Real.x=0;		//停止
+										MECANUM_Motor_Data.Speed_Real.y=0;
 										MECANUM_Motor_Data.Speed_GyroZ_Set=0;					break;
 										
 					case 'X': MPU_Data.Yaw_MapZero_Save=MPU_Data.Yaw_MapZero;	
@@ -173,11 +170,11 @@ void FLEXCOMM0_DriverIRQHandler(void)
 			{
 				switch(Data)
 				{
-					case 'A': MECANUM_Motor_Data.Speed_X_Real=0;		//前进
-										MECANUM_Motor_Data.Speed_Y_Real=MECANUM_Motor_Data.Speed_All; break;
+					case 'A': MECANUM_Motor_Data.Speed_Real.x=0;		//前进
+										MECANUM_Motor_Data.Speed_Real.y=MECANUM_Motor_Data.Speed_All; break;
 					
-					case 'E': MECANUM_Motor_Data.Speed_X_Real=0;		//后退
-										MECANUM_Motor_Data.Speed_Y_Real=-MECANUM_Motor_Data.Speed_All;break;
+					case 'E': MECANUM_Motor_Data.Speed_Real.x=0;		//后退
+										MECANUM_Motor_Data.Speed_Real.y=-MECANUM_Motor_Data.Speed_All;break;
 
 					case 'G': MECANUM_Motor_Data.Speed_GyroZ_Set=-100;	//顺时针
 										break;
@@ -185,8 +182,8 @@ void FLEXCOMM0_DriverIRQHandler(void)
 					case 'C': MECANUM_Motor_Data.Speed_GyroZ_Set=100;			//逆时针
 										break;
 					
-					case 'Z': MECANUM_Motor_Data.Speed_X_Real=0;		//停止
-										MECANUM_Motor_Data.Speed_Y_Real=0;
+					case 'Z': MECANUM_Motor_Data.Speed_Real.x=0;		//停止
+										MECANUM_Motor_Data.Speed_Real.y=0;
 										MECANUM_Motor_Data.Speed_GyroZ_Set=0;			
 										break;
 										

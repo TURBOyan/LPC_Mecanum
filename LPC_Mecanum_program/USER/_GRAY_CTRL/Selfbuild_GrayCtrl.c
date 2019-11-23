@@ -91,7 +91,7 @@ void Judge_GrayData(void)	//Ìø±äµã¼ì²â
 	}
 }
 
-void Gray_Calibration(void)
+uint8 Gray_Calibration(void)
 {
 	static uint16 flag;
 	uint8 Gray_upleft[5]	 ,Gray_upleft_sum,
