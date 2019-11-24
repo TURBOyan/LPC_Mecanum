@@ -1,23 +1,23 @@
 #include "Selfbuild_GrayCtrl.h"
 
 
-//PIN_enum Gray[6][6]={		//光电管位置（第一行为车头）
-//{B31, A0, B11, B15 , A2,B30},
-//{A6,0xff,0xff,0xff,0xff,B16},
-//{A19,0xff,0xff,0xff,0xff,A5},
-//{A10 ,0xff,0xff,0xff,0xff,A18},	
-//{B20,0xff,0xff,0xff,0xff,A17},
-//{B19,B18 , B6 ,A21 , A20 ,B28},
-//};
-
 PIN_enum Gray[6][6]={		//光电管位置（第一行为车头）
-{B31 , A0 , B11,0xff,0xff,0xff},
-{A6  ,0xff,0xff,0xff,0xff,0xff},
-{A19 ,0xff,0xff,0xff,0xff,0xff},
-{0xff,0xff,0xff,0xff,0xff, A18},	
-{0xff,0xff,0xff,0xff,0xff, A17},
-{0xff,0xff,0xff,A21 ,A20 , B28},
+{B31, A0, B11, B15 , A2,B30},
+{A6,0xff,0xff,0xff,0xff,B16},
+{A19,0xff,0xff,0xff,0xff,A5},
+{A10 ,0xff,0xff,0xff,0xff,A18},	
+{B20,0xff,0xff,0xff,0xff,A17},
+{B19,B18 , B6 ,A21 , A20 ,B28},
 };
+
+//PIN_enum Gray[6][6]={		//光电管位置（第一行为车头）
+//{B31 , A0 , B11,0xff,0xff,0xff},
+//{A6  ,0xff,0xff,0xff,0xff,0xff},
+//{A19 ,0xff,0xff,0xff,0xff,0xff},
+//{0xff,0xff,0xff,0xff,0xff, A18},	
+//{0xff,0xff,0xff,0xff,0xff, A17},
+//{0xff,0xff,0xff,A21 ,A20 , B28},
+//};
 
 void Gray_RotationClockwise90(PIN_enum a[6][6])		//将6x6数组顺时针旋转90度
 {
@@ -93,7 +93,7 @@ void Judge_GrayData(void)	//跳变点检测
 
 uint8 Gray_Calibration(void)
 {
-	static uint16 flag;
+	static uint16 Continue_flag;
 	uint8 Gray_upleft[5]	 ,Gray_upleft_sum,
 				Gray_dowmright[5],Gray_dowmright_sum;
 	
@@ -115,9 +115,17 @@ uint8 Gray_Calibration(void)
 		Gray_dowmright_sum +=Gray_dowmright[num];
 	}
 	
-//	if(flag==0
-//		&&Gray_upleft>Gray_dowmright)
-//	{
-//		
-//	}
+	if(Gray_upleft_sum == 5 && Gray_dowmright_sum == 5)
+	{
+		Continue_flag=0;
+		return 1;
+	}
+//		MECANUM_Motor_Data.Speed_Real.x=0;
+//		MECANUM_Motor_Data.Speed_Real.y=0;
+	if(	Continue_flag==0
+		&&Gray_upleft_sum>=Gray_dowmright_sum)
+	{
+		Continue_flag=11;
+
+	}
 }
