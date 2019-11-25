@@ -175,7 +175,7 @@ uint8 Distance_Coarse(int8* X_Now,int8* Y_Now,int8 X_Set,int8 Y_Set)
 	//分别对相对地图的X、Y速度分量设置缓慢启动，缓慢停止，和限速
 		if(fabs(MECANUM_Motor_Data.Distance_Real.x)<=10)		//地图X方向//启动时
 		{
-			MECANUM_Motor_Data.Speed_Real.x=RANGE(MECANUM_Motor_Data.Speed_Real.x,500,-500);
+			MECANUM_Motor_Data.Speed_Real.x=RANGE(MECANUM_Motor_Data.Speed_Real.x,300,-300);
 		}
 		else if(fabs(Distance_SetX-MECANUM_Motor_Data.Distance_Real.x)>10)//将要接近目标坐标时
 		{
@@ -183,12 +183,12 @@ uint8 Distance_Coarse(int8* X_Now,int8* Y_Now,int8 X_Set,int8 Y_Set)
 		}
 		else
 		{
-			MECANUM_Motor_Data.Speed_Real.x=RANGE(MECANUM_Motor_Data.Speed_Real.x,500,-500);
+			MECANUM_Motor_Data.Speed_Real.x=RANGE(MECANUM_Motor_Data.Speed_Real.x,300,-300);
 		}
 		
 		if(fabs(MECANUM_Motor_Data.Distance_Real.y)<=10)	//地图Y方向//启动时
 		{
-			MECANUM_Motor_Data.Speed_Real.y=RANGE(MECANUM_Motor_Data.Speed_Real.y,500,-500);
+			MECANUM_Motor_Data.Speed_Real.y=RANGE(MECANUM_Motor_Data.Speed_Real.y,300,-300);
 		}
 		else if(fabs(Distance_SetY-MECANUM_Motor_Data.Distance_Real.y)>10)//将要接近目标坐标时
 		{
@@ -196,7 +196,7 @@ uint8 Distance_Coarse(int8* X_Now,int8* Y_Now,int8 X_Set,int8 Y_Set)
 		}
 		else
 		{
-			MECANUM_Motor_Data.Speed_Real.y=RANGE(MECANUM_Motor_Data.Speed_Real.y,500,-500);
+			MECANUM_Motor_Data.Speed_Real.y=RANGE(MECANUM_Motor_Data.Speed_Real.y,300,-300);
 		}
 	}
 	
@@ -211,7 +211,7 @@ uint8 Distance_Coarse(int8* X_Now,int8* Y_Now,int8 X_Set,int8 Y_Set)
 		MECANUM_Motor_Data.Speed_Real.y=0;
 		*X_Now=X_Set;		//保存位置
 		*Y_Now=Y_Set;
-		
+
 		MPU_Data.Yaw_Save=MPU_Data.Yaw;	//重新校准地图坐标
 		MPU_Data.Yaw_HeadZero_Aid=0;
 		MPU_Data.Yaw_MapZero_Save=0;

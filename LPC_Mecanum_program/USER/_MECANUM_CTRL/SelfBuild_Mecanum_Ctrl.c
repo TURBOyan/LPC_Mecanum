@@ -33,7 +33,7 @@ void Wheel_Analysis(void)
 		MECANUM_Motor_Data.SPEED_Set_cm_s[Left_Back]    = -(int16)MECANUM_Motor_Data.Speed.x + (int16)MECANUM_Motor_Data.Speed.y+(int16)MECANUM_Motor_Data.Speed_GyroZ_Out*(a_PARAMETER_cm+b_PARAMETER_cm);
 		MECANUM_Motor_Data.SPEED_Set_cm_s[Right_Back]   = +(int16)MECANUM_Motor_Data.Speed.x + (int16)MECANUM_Motor_Data.Speed.y-(int16)MECANUM_Motor_Data.Speed_GyroZ_Out*(a_PARAMETER_cm+b_PARAMETER_cm);
 	
-		MECANUM_Motor_Data.Distance_Real.x+=MECANUM_Motor_Data.Speed_Real.x*0.00020668372;
+		MECANUM_Motor_Data.Distance_Real.x+=MECANUM_Motor_Data.Speed_Real.x*0.00020668372;	//Ratio=(pi*d)/19*60*100
 		MECANUM_Motor_Data.Distance_Real.y+=MECANUM_Motor_Data.Speed_Real.y*0.00020668372;
 }
 

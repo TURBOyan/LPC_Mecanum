@@ -123,9 +123,60 @@ uint8 Gray_Calibration(void)
 //		MECANUM_Motor_Data.Speed_Real.x=0;
 //		MECANUM_Motor_Data.Speed_Real.y=0;
 	if(	Continue_flag==0
-		&&Gray_upleft_sum>=Gray_dowmright_sum)
+		&&(Gray_upleft[0] || Gray_upleft[1] || Gray_upleft[2]))
 	{
 		Continue_flag=11;
+		
+		if(((Gray_upleft[2]+Gray_upleft[3]+Gray_upleft[4])==3) 
+		&& ((Gray_dowmright[2]+Gray_dowmright[3]+Gray_dowmright[4])!=3))
+		{
+			MECANUM_Motor_Data.Speed_Real.x=0;
+			MECANUM_Motor_Data.Speed_Real.y=-100;
+		}
+		else if(((Gray_upleft[2]+Gray_upleft[3]+Gray_upleft[4])!=3) 
+		&& ((Gray_dowmright[2]+Gray_dowmright[3]+Gray_dowmright[4])==3))
+		{
+			MECANUM_Motor_Data.Speed_Real.x=0;
+			MECANUM_Motor_Data.Speed_Real.y=100;
+		}
+		else
+		{
+			MECANUM_Motor_Data.Speed_Real.x=0;
+			MECANUM_Motor_Data.Speed_Real.y=-100;
+		}
 
+	}
+	
+	if(Continue_flag==11
+	&&(Gray_upleft[2]+Gray_upleft[3]+Gray_upleft[4])!=3 
+	&&(Gray_dowmright[2]+Gray_dowmright[3]+Gray_dowmright[4])==3)
+	{
+	    Continue_flag=12;
+		if(((Gray_upleft[2]+Gray_upleft[3]+Gray_upleft[4])==3) 
+		&& ((Gray_dowmright[2]+Gray_dowmright[3]+Gray_dowmright[4])!=3))
+		{
+			MECANUM_Motor_Data.Speed_Real.x=-100;
+			MECANUM_Motor_Data.Speed_Real.y=0;
+		}
+		else if(((Gray_upleft[2]+Gray_upleft[3]+Gray_upleft[4])!=3) 
+		&& ((Gray_dowmright[2]+Gray_dowmright[3]+Gray_dowmright[4])==3))
+		{
+			MECANUM_Motor_Data.Speed_Real.x=100;
+			MECANUM_Motor_Data.Speed_Real.y=0;
+		}
+		else
+		{
+			MECANUM_Motor_Data.Speed_Real.x=-100;
+			MECANUM_Motor_Data.Speed_Real.y=0;
+		}
+	}
+	
+	if(Continue_flag==12
+	&& ((Gray_upleft[0]+Gray_upleft[1]+Gray_upleft[2])==3 
+	&& (Gray_dowmright[0]+Gray_dowmright[1]+Gray_dowmright[2])==3))
+	{
+	    Continue_flag=0;
+		MECANUM_Motor_Data.Speed_Real.x=0;
+		MECANUM_Motor_Data.Speed_Real.y=0;
 	}
 }
