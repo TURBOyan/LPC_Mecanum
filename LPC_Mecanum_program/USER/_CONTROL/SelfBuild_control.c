@@ -143,54 +143,36 @@ void MPU_Yaw_Closeloop(void)
 uint8 Distance_Coarse(int8* X_Now,int8* Y_Now,int8 X_Set,int8 Y_Set)
 {
 	static double Distance_SetX,Distance_SetY;
-	static int8 Continue_Flag=0,Return_Flag=0;
+	static int8 Continue_Flag_x=0,Continue_Flag_y=0,Return_Flag=0;
 	
-	if(Continue_Flag==0										//当设定的坐标和此时的坐标发生变化时,开始粗调
-		&&((*X_Now!=X_Set) || (*Y_Now!=Y_Set)))
+	if(	Continue_Flag_x ==0
+		&&(*X_Now!=X_Set)
+		)
 	{
-		Continue_Flag=1;
+		Continue_Flag_x=1;
 		MECANUM_Motor_Data.Distance_Real.x = 0;
-		MECANUM_Motor_Data.Distance_Real.y = 0;
 		Distance_SetX = (X_Set-*X_Now)*50;
-		Distance_SetY = (Y_Set-*Y_Now)*50;
-		if(X_Set==*X_Now)
-		{
-			Return_Flag=1;
-			if(*X_Now == 6)
-			{
-				Distance_SetX=-15;
-			}
-			else if(*X_Now == 0)
-			{
-				Distance_SetX=15;
-			}
-			else 
-			{
-				Distance_SetX=15;
-			}
-		}
-		
-		if(Y_Set==*Y_Now)
-		{
-			Return_Flag=-1;
-			if(*Y_Now == 6)
-			{
-				Distance_SetY=-15;
-			}
-			else if(*Y_Now == 0)
-			{
-				Distance_SetY=15;
-			}
-			else 
-			{
-				Distance_SetY=15;
-			}
-		}
 	}
 	
-	if(Continue_Flag == 1)	//当允许粗调时，开始粗调
+	if(Continue_Flag_x ==0
+	&& X_Set==*X_Now
+	&& Y_Set!=*Y_Now)
 	{
-	//分别对相对地图的X、Y速度分量设置缓慢启动，缓慢停止，和限速
+		Continue_Flag_x=1;
+		Return_Flag=1;
+		if(*X_Now >= 6)
+		{
+			Distance_SetX=-15;
+		}
+		else
+		{
+			Distance_SetX=15;
+		}
+	}
+	if(Continue_Flag_x == 1)	//当允许粗调时，开始粗调-x
+	{
+	//分别对相对地图的X速度分量设置缓慢启动，缓慢停止，和限速
+		MECANUM_Motor_Data.Speed_Real.x=10*PID_Calcu	(Distance_SetX,MECANUM_Motor_Data.Distance_Real.x,&PID_Dis[0],Local);
 		if(fabs(MECANUM_Motor_Data.Distance_Real.x)<=5)		//地图X方向//启动时
 		{
 			MECANUM_Motor_Data.Speed_Real.x=RANGE(MECANUM_Motor_Data.Speed_Real.x,900,-900);
@@ -203,8 +185,58 @@ uint8 Distance_Coarse(int8* X_Now,int8* Y_Now,int8 X_Set,int8 Y_Set)
 		{
 			MECANUM_Motor_Data.Speed_Real.x=RANGE(MECANUM_Motor_Data.Speed_Real.x,500,-500);
 		}
-		
-		if(fabs(MECANUM_Motor_Data.Distance_Real.y)<=5)	//地图Y方向//启动时
+	}
+	
+	if(	 Continue_Flag_x == 1					//当接近目标坐标时，停止粗调，开始细调
+	&&(MECANUM_Motor_Data.Distance_Real.x >=Distance_SetX-30)
+	&&(MECANUM_Motor_Data.Distance_Real.x <=Distance_SetX+30)
+	)
+	{
+		Continue_Flag_x =2;
+	}
+	
+		if(Continue_Flag_x == 2
+	 &&Gray_Calibration_X((int16)Distance_SetX,Return_Flag)		//光电管细调
+		)
+	{
+		Continue_Flag_x=3;
+		Return_Flag=0;
+		MECANUM_Motor_Data.Distance_Real.x = 0;
+		MECANUM_Motor_Data.Speed_Real.x=0;
+		*X_Now=X_Set;		//保存位置
+	}
+	
+	/******************************************************/
+	/******************************************************/
+	if(	Continue_Flag_y ==0
+		&&(*Y_Now!=Y_Set)
+		)
+	{
+		Continue_Flag_y=1;
+		MECANUM_Motor_Data.Distance_Real.y = 0;
+		Distance_SetY = (Y_Set-*Y_Now)*50;
+	}
+	
+	if(Continue_Flag_y ==0
+	&& X_Set!=*X_Now
+	&& Y_Set==*Y_Now)
+	{
+		Continue_Flag_y=1;
+		Return_Flag=1;
+		if(*Y_Now >= 6)
+		{
+			Distance_SetY=-15;
+		}
+		else
+		{
+			Distance_SetY=15;
+		}
+	}
+	if(Continue_Flag_y == 1)	//当允许粗调时，开始粗调-x
+	{
+	//分别对相对地图的X速度分量设置缓慢启动，缓慢停止，和限速
+		MECANUM_Motor_Data.Speed_Real.y=10*PID_Calcu	(Distance_SetY,MECANUM_Motor_Data.Distance_Real.y,&PID_Dis[1],Local);
+		if(fabs(MECANUM_Motor_Data.Distance_Real.y)<=5)		//地图X方向//启动时
 		{
 			MECANUM_Motor_Data.Speed_Real.y=RANGE(MECANUM_Motor_Data.Speed_Real.y,900,-900);
 		}
@@ -218,33 +250,138 @@ uint8 Distance_Coarse(int8* X_Now,int8* Y_Now,int8 X_Set,int8 Y_Set)
 		}
 	}
 	
-	if(	 Continue_Flag == 1					//当接近目标坐标时，停止粗调，开始细调
-		&&(MECANUM_Motor_Data.Distance_Real.x >Distance_SetX-20)
-		&&(MECANUM_Motor_Data.Distance_Real.x <Distance_SetX+20)
-		&&(MECANUM_Motor_Data.Distance_Real.y >Distance_SetY-20)
-		&&(MECANUM_Motor_Data.Distance_Real.y <Distance_SetY+20)
-		)
+	if(	 Continue_Flag_y == 1					//当接近目标坐标时，停止粗调，开始细调
+	&&(MECANUM_Motor_Data.Distance_Real.y >=Distance_SetY-30)
+	&&(MECANUM_Motor_Data.Distance_Real.y <=Distance_SetY+30)
+	)
 	{
-		Continue_Flag =2;
+		Continue_Flag_y =2;
 	}
 	
-	if(Continue_Flag == 2
-	 &&Gray_Calibration((int16)Distance_SetX,(int16)Distance_SetY,Return_Flag)		//光电管细调
+	if(Continue_Flag_y == 2
+	 &&Gray_Calibration_Y((int16)Distance_SetY,Return_Flag)		//光电管细调
 		)
 	{
-		Continue_Flag=0;
+		Continue_Flag_y=3;
 		Return_Flag=0;
-		MECANUM_Motor_Data.Distance_Real.x = 0;
 		MECANUM_Motor_Data.Distance_Real.y = 0;
-		MECANUM_Motor_Data.Speed_Real.x=0;
 		MECANUM_Motor_Data.Speed_Real.y=0;
-		*X_Now=X_Set;		//保存位置
-		*Y_Now=Y_Set;
-		
+		*Y_Now=Y_Set;		//保存位置
+	}
+	
+	if(Continue_Flag_x==3
+	 &&Continue_Flag_y==3)
+	{
+		Continue_Flag_x=0;
+		Continue_Flag_y=0;
 		MPU_Data.Yaw_Save=MPU_Data.Yaw;	//重新校准地图坐标
 		MPU_Data.Yaw_HeadZero_Aid=0;
 		MPU_Data.Yaw_MapZero_Save=0;
 	}
+	
+//	
+//	
+//	
+//	if(Continue_Flag==0										//当设定的坐标和此时的坐标发生变化时,开始粗调
+//		&&((*X_Now!=X_Set) || (*Y_Now!=Y_Set)))
+//	{
+//		Continue_Flag=1;
+//		MECANUM_Motor_Data.Distance_Real.x = 0;
+//		MECANUM_Motor_Data.Distance_Real.y = 0;
+//		Distance_SetX = (X_Set-*X_Now)*50;
+//		Distance_SetY = (Y_Set-*Y_Now)*50;
+//		if(X_Set==*X_Now)
+//		{
+//			Return_Flag=1;
+//			if(*X_Now == 6)
+//			{
+//				Distance_SetX=-15;
+//			}
+//			else if(*X_Now == 0)
+//			{
+//				Distance_SetX=15;
+//			}
+//			else 
+//			{
+//				Distance_SetX=15;
+//			}
+//		}
+//		
+//		if(Y_Set==*Y_Now)
+//		{
+//			Return_Flag=-1;
+//			if(*Y_Now == 6)
+//			{
+//				Distance_SetY=-15;
+//			}
+//			else if(*Y_Now == 0)
+//			{
+//				Distance_SetY=15;
+//			}
+//			else 
+//			{
+//				Distance_SetY=15;
+//			}
+//		}
+//	}
+//	
+//	if(Continue_Flag == 1)	//当允许粗调时，开始粗调
+//	{
+//	//分别对相对地图的X、Y速度分量设置缓慢启动，缓慢停止，和限速
+//		if(fabs(MECANUM_Motor_Data.Distance_Real.x)<=5)		//地图X方向//启动时
+//		{
+//			MECANUM_Motor_Data.Speed_Real.x=RANGE(MECANUM_Motor_Data.Speed_Real.x,900,-900);
+//		}
+//		else if(fabs(Distance_SetX-MECANUM_Motor_Data.Distance_Real.x)>=50)
+//		{
+//			MECANUM_Motor_Data.Speed_Real.x=RANGE(MECANUM_Motor_Data.Speed_Real.x,MECANUM_Motor_Data.Speed_All,-MECANUM_Motor_Data.Speed_All);
+//		}
+//		else//将要接近目标坐标时
+//		{
+//			MECANUM_Motor_Data.Speed_Real.x=RANGE(MECANUM_Motor_Data.Speed_Real.x,500,-500);
+//		}
+//		
+//		if(fabs(MECANUM_Motor_Data.Distance_Real.y)<=5)	//地图Y方向//启动时
+//		{
+//			MECANUM_Motor_Data.Speed_Real.y=RANGE(MECANUM_Motor_Data.Speed_Real.y,900,-900);
+//		}
+//		else if(fabs(Distance_SetY-MECANUM_Motor_Data.Distance_Real.y)>=50)
+//		{
+//			MECANUM_Motor_Data.Speed_Real.y=RANGE(MECANUM_Motor_Data.Speed_Real.y,MECANUM_Motor_Data.Speed_All,-MECANUM_Motor_Data.Speed_All);
+//		}
+//		else//将要接近目标坐标时
+//		{
+//			MECANUM_Motor_Data.Speed_Real.y=RANGE(MECANUM_Motor_Data.Speed_Real.y,500,-500);
+//		}
+//	}
+//	
+//	if(	 Continue_Flag == 1					//当接近目标坐标时，停止粗调，开始细调
+//		&&(MECANUM_Motor_Data.Distance_Real.x >Distance_SetX-30)
+//		&&(MECANUM_Motor_Data.Distance_Real.x <Distance_SetX+30)
+//		&&(MECANUM_Motor_Data.Distance_Real.y >Distance_SetY-30)
+//		&&(MECANUM_Motor_Data.Distance_Real.y <Distance_SetY+30)
+//		)
+//	{
+//		Continue_Flag =2;
+//	}
+//	
+//	if(Continue_Flag == 2
+//	 &&Gray_Calibration((int16)Distance_SetX,(int16)Distance_SetY,Return_Flag)		//光电管细调
+//		)
+//	{
+//		Continue_Flag=0;
+//		Return_Flag=0;
+//		MECANUM_Motor_Data.Distance_Real.x = 0;
+//		MECANUM_Motor_Data.Distance_Real.y = 0;
+//		MECANUM_Motor_Data.Speed_Real.x=0;
+//		MECANUM_Motor_Data.Speed_Real.y=0;
+//		*X_Now=X_Set;		//保存位置
+//		*Y_Now=Y_Set;
+//		
+//		MPU_Data.Yaw_Save=MPU_Data.Yaw;	//重新校准地图坐标
+//		MPU_Data.Yaw_HeadZero_Aid=0;
+//		MPU_Data.Yaw_MapZero_Save=0;
+//	}
 
 ///**/		OLED_P6x8Int(70, 0, Continue_Flag, 2);
 ///**/		OLED_P6x8Int(70, 1, Gray_Flag_x, 2);

@@ -91,16 +91,14 @@ void Judge_GrayData(void)	//跳变点检测
 	}
 }
 
-uint8 Gray_Calibration(int16 X_Dir,int16 Y_Dir,int8 Return_Flag)
+uint8 Gray_Calibration_X(int16 X_Dir,int8 Return_Flag)
 {
 	static uint16 Continue_flag;
 	uint8 Gray_xleft[6]	 	 ,Gray_xRight[6],
-				Gray_yUp[6]	 	 	 ,Gray_yDown[6],
-				Gray_xleft_sum=0 ,Gray_xRight_sum=0,
-				Gray_yUp_sum=0	 ,Gray_yDown_sum=0;
+				Gray_xleft_sum=0 ,Gray_xRight_sum=0;
 	
-	int8 X_Dir_judge,Y_Dir_judge;	//保存运动方向
-	static int8 X_Flag=0,Y_Flag=0;
+	int8 X_Dir_judge;	//保存运动方向
+	static int8 X_Flag=0;
 	
 	for(uint8 num=0;num<6;num++)
 	{
@@ -109,96 +107,17 @@ uint8 Gray_Calibration(int16 X_Dir,int16 Y_Dir,int8 Return_Flag)
 		
 		Gray_xRight[num]=Base_Data.Gray_Data[num][5];	//保存右侧光电管值
 		Gray_xRight_sum+=Gray_xRight[num];
-		
-		Gray_yUp[num]=Base_Data.Gray_Data[0][num];	//保存上侧光电管值
-		Gray_yUp_sum+=Gray_yUp[num];
-		
-		Gray_yDown[num]=Base_Data.Gray_Data[5][num];	//保存下侧光电管值
-		Gray_yDown_sum+=Gray_yDown[num];
 	}
 	
 	if(Gray_xleft_sum  == 6
 	 &&Gray_xRight_sum == 6
-	 &&Gray_yUp_sum    == 6
-	 &&Gray_yDown_sum  == 6)
+		)
 	{
 		return 1;
 	}
-	
 	X_Dir_judge=X_Dir>0?1:(X_Dir<0?-1:0);
-	Y_Dir_judge=Y_Dir>0?1:(Y_Dir<0?-1:0);
 	
 	if(Return_Flag == 1)X_Dir_judge=-X_Dir_judge;
-	if(Return_Flag ==-1)Y_Dir_judge=-Y_Dir_judge;
-	
-////X	
-//	if(X_Dir == 0)
-//	{
-//	/********************************/	
-//		if(X_Flag == 0
-//		 &&Gray_xleft_sum > Gray_xRight_sum)
-//		{
-//			X_Flag =1;
-//			X_Dir_judge = 1;
-//		}
-//		
-//		if(X_Flag == 1
-//		&& Gray_xleft_sum <= Gray_xRight_sum)
-//		{
-//			X_Flag =0;
-//			X_Dir_judge = 0;
-//		}
-//	/********************************/	
-//		if(X_Flag == 0
-//		 &&Gray_xleft_sum < Gray_xRight_sum)
-//		{
-//			X_Flag =-1;
-//			X_Dir_judge = -1;
-//		}
-//		
-//		if(X_Flag == -1
-//		&& Gray_xleft_sum <= Gray_xRight_sum)
-//		{
-//			X_Flag =0;
-//			X_Dir_judge = 0;
-//		}
-//	/********************************/	
-//	}
-//	
-////Y	
-//	if(Y_Dir == 0)
-//	{
-//		
-//	/********************************/	
-//		if(Y_Flag == 0
-//		 &&Gray_yUp_sum > Gray_yDown_sum)
-//		{
-//			Y_Flag =1;
-//			Y_Dir_judge = 1;
-//		}
-//		
-//		if(Y_Flag == 1
-//		&& Gray_yUp_sum <= Gray_yDown_sum)
-//		{
-//			Y_Flag =0;
-//			Y_Dir_judge = 0;
-//		}
-//	/********************************/	
-//		if(Y_Flag == 0
-//		 &&Gray_yUp_sum < Gray_yDown_sum)
-//		{
-//			Y_Flag =-1;
-//			Y_Dir_judge = -1;
-//		}
-//		
-//		if(Y_Flag == -1
-//		&& Gray_yUp_sum <= Gray_yDown_sum)
-//		{
-//			Y_Flag =0;
-//			Y_Dir_judge = 0;
-//		}
-//	/********************************/	
-//	}
 	
 	if(Gray_xleft_sum  == 6
 	 &&Gray_xRight_sum == 6
@@ -206,6 +125,37 @@ uint8 Gray_Calibration(int16 X_Dir,int16 Y_Dir,int8 Return_Flag)
 		MECANUM_Motor_Data.Speed_Real.x=0;
 	else
 		MECANUM_Motor_Data.Speed_Real.x=200*X_Dir_judge;
+
+	return 0;
+	
+}
+uint8 Gray_Calibration_Y(int16 Y_Dir,int8 Return_Flag)
+{
+	static uint16 Continue_flag;
+	uint8 Gray_yUp[6]	 	 	 ,Gray_yDown[6],
+				Gray_yUp_sum=0	 ,Gray_yDown_sum=0;
+	
+	int8 Y_Dir_judge;	//保存运动方向
+	static int8 Y_Flag=0;
+	
+	for(uint8 num=0;num<6;num++)
+	{
+		Gray_yUp[num]=Base_Data.Gray_Data[0][num];	//保存上侧光电管值
+		Gray_yUp_sum+=Gray_yUp[num];
+		
+		Gray_yDown[num]=Base_Data.Gray_Data[5][num];	//保存下侧光电管值
+		Gray_yDown_sum+=Gray_yDown[num];
+	}
+	
+	if(Gray_yUp_sum    == 6
+	 &&Gray_yDown_sum  == 6)
+	{
+		return 1;
+	}
+
+	Y_Dir_judge=Y_Dir>0?1:(Y_Dir<0?-1:0);
+	
+	if(Return_Flag ==-1)Y_Dir_judge=-Y_Dir_judge;
 	
 	if(Gray_yUp_sum  == 6
 	 &&Gray_yDown_sum == 6
