@@ -145,55 +145,22 @@
           <Name>-T0</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint>
-        <Bp>
-          <Number>0</Number>
-          <Type>0</Type>
-          <LineNumber>109</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>31456</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>F:\2019 smart car competition\浜斿瓙妫嬫満鍣ㄤ汉\LPC_Mecanum\LPC_Mecanum_program\USER\src\isr.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\LPC546XX\USER/src/isr.c\109</Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
-          <LineNumber>155</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>29954</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>F:\2019 smart car competition\浜斿瓙妫嬫満鍣ㄤ汉\LPC_Mecanum\LPC_Mecanum_program\USER\_CONTROL\SelfBuild_control.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\LPC546XX\USER/_CONTROL/SelfBuild_control.c\155</Expression>
-        </Bp>
-      </Breakpoint>
+      <Breakpoint/>
       <WatchWindow1>
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>MECANUM_Motor_Data.PWM_Set</ItemText>
+          <ItemText>Gray_Flag_y</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>MECANUM_Motor_Data.Speed_Y</ItemText>
+          <ItemText>Gray_Flag_x</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>MECANUM_Motor_Data.SPEED_Set_cm_s</ItemText>
+          <ItemText>Continue_Flag</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
