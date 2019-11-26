@@ -201,7 +201,7 @@ uint8 Distance_Coarse(int8* X_Now,int8* Y_Now,int8 X_Set,int8 Y_Set)
 	}
 	
 	if(Continue_Flag == 2
-	 &&Gray_Calibration()		//光电管细调
+	// &&Gray_Calibration()		//光电管细调
 		)
 	{
 		Continue_Flag=0;
