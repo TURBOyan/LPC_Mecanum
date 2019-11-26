@@ -53,11 +53,10 @@ void PIN_INT1_DriverIRQHandler(void)
 /**/			}
 /**/		}
 /**//**************************************************************************************/	
-			Gray_Calibration();
-//		Distance_Coarse(&MECANUM_Motor_Data.Car_Coord_Now.x		//距离粗调+光电管细调
-//											,&MECANUM_Motor_Data.Car_Coord_Now.y
-//											, MECANUM_Motor_Data.Car_Coord_Set.x
-//											, MECANUM_Motor_Data.Car_Coord_Set.y);
+		Distance_Coarse(&MECANUM_Motor_Data.Car_Coord_Now.x		//距离粗调+光电管细调
+											,&MECANUM_Motor_Data.Car_Coord_Now.y
+											, MECANUM_Motor_Data.Car_Coord_Set.x
+											, MECANUM_Motor_Data.Car_Coord_Set.y);
 		
 			//如果按下上键，并且拨码开关1是开启状态，则重新校准地图坐标
 		if(Query_ButtSwitData(Button_Data,Button_Up_Data) && Query_ButtSwitData(Switch_Data,Switch_1_Data))	

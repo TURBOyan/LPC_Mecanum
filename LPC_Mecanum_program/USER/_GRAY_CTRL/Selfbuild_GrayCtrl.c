@@ -91,92 +91,129 @@ void Judge_GrayData(void)	//跳变点检测
 	}
 }
 
-uint8 Gray_Calibration(void)
+uint8 Gray_Calibration(int16 X_Dir,int16 Y_Dir,int8 Return_Flag)
 {
 	static uint16 Continue_flag;
-	uint8 Gray_upleft[5]	 ,Gray_upleft_sum,
-				Gray_dowmright[5],Gray_dowmright_sum;
+	uint8 Gray_xleft[6]	 	 ,Gray_xRight[6],
+				Gray_yUp[6]	 	 	 ,Gray_yDown[6],
+				Gray_xleft_sum=0 ,Gray_xRight_sum=0,
+				Gray_yUp_sum=0	 ,Gray_yDown_sum=0;
 	
-	Gray_upleft[0]=Base_Data.Gray_Data[2][0];		//保存左上角光电管值
-	Gray_upleft[1]=Base_Data.Gray_Data[1][0];
-	Gray_upleft[2]=Base_Data.Gray_Data[0][0];
-	Gray_upleft[3]=Base_Data.Gray_Data[0][1];
-	Gray_upleft[4]=Base_Data.Gray_Data[0][2];
+	int8 X_Dir_judge,Y_Dir_judge;	//保存运动方向
+	static int8 X_Flag=0,Y_Flag=0;
 	
-	Gray_dowmright[0]=Base_Data.Gray_Data[3][5];	//保存右下角光电管值
-	Gray_dowmright[1]=Base_Data.Gray_Data[4][5];
-	Gray_dowmright[2]=Base_Data.Gray_Data[5][5];
-	Gray_dowmright[3]=Base_Data.Gray_Data[5][4];
-	Gray_dowmright[4]=Base_Data.Gray_Data[5][3];
-	
-	for(uint8 num=0;num<6;num++)				//分别保存左上角和右下角光电管状态总值
+	for(uint8 num=0;num<6;num++)
 	{
-		Gray_upleft_sum    +=Gray_upleft[num];
-		Gray_dowmright_sum +=Gray_dowmright[num];
+		Gray_xleft[num]=Base_Data.Gray_Data[num][0];	//保存左侧光电管值
+		Gray_xleft_sum+=Gray_xleft[num];
+		
+		Gray_xRight[num]=Base_Data.Gray_Data[num][5];	//保存右侧光电管值
+		Gray_xRight_sum+=Gray_xRight[num];
+		
+		Gray_yUp[num]=Base_Data.Gray_Data[0][num];	//保存上侧光电管值
+		Gray_yUp_sum+=Gray_yUp[num];
+		
+		Gray_yDown[num]=Base_Data.Gray_Data[5][num];	//保存下侧光电管值
+		Gray_yDown_sum+=Gray_yDown[num];
 	}
 	
-	if(Gray_upleft_sum == 5 && Gray_dowmright_sum == 5)
+	if(Gray_xleft_sum  == 6
+	 &&Gray_xRight_sum == 6
+	 &&Gray_yUp_sum    == 6
+	 &&Gray_yDown_sum  == 6)
 	{
-		Continue_flag=0;
 		return 1;
 	}
-//		MECANUM_Motor_Data.Speed_Real.x=0;
-//		MECANUM_Motor_Data.Speed_Real.y=0;
-	if(	Continue_flag==0
-		&&(Gray_upleft[0] || Gray_upleft[1] || Gray_upleft[2]))
-	{
-		Continue_flag=11;
-		
-		if(((Gray_upleft[2]+Gray_upleft[3]+Gray_upleft[4])==3) 
-		&& ((Gray_dowmright[2]+Gray_dowmright[3]+Gray_dowmright[4])!=3))
-		{
-			MECANUM_Motor_Data.Speed_Real.x=0;
-			MECANUM_Motor_Data.Speed_Real.y=-100;
-		}
-		else if(((Gray_upleft[2]+Gray_upleft[3]+Gray_upleft[4])!=3) 
-		&& ((Gray_dowmright[2]+Gray_dowmright[3]+Gray_dowmright[4])==3))
-		{
-			MECANUM_Motor_Data.Speed_Real.x=0;
-			MECANUM_Motor_Data.Speed_Real.y=100;
-		}
-		else
-		{
-			MECANUM_Motor_Data.Speed_Real.x=0;
-			MECANUM_Motor_Data.Speed_Real.y=-100;
-		}
-
-	}
 	
-	if(Continue_flag==11
-	&&(Gray_upleft[2]+Gray_upleft[3]+Gray_upleft[4])!=3 
-	&&(Gray_dowmright[2]+Gray_dowmright[3]+Gray_dowmright[4])==3)
-	{
-	    Continue_flag=12;
-		if(((Gray_upleft[2]+Gray_upleft[3]+Gray_upleft[4])==3) 
-		&& ((Gray_dowmright[2]+Gray_dowmright[3]+Gray_dowmright[4])!=3))
-		{
-			MECANUM_Motor_Data.Speed_Real.x=-100;
-			MECANUM_Motor_Data.Speed_Real.y=0;
-		}
-		else if(((Gray_upleft[2]+Gray_upleft[3]+Gray_upleft[4])!=3) 
-		&& ((Gray_dowmright[2]+Gray_dowmright[3]+Gray_dowmright[4])==3))
-		{
-			MECANUM_Motor_Data.Speed_Real.x=100;
-			MECANUM_Motor_Data.Speed_Real.y=0;
-		}
-		else
-		{
-			MECANUM_Motor_Data.Speed_Real.x=-100;
-			MECANUM_Motor_Data.Speed_Real.y=0;
-		}
-	}
+	X_Dir_judge=X_Dir>0?1:(X_Dir<0?-1:0);
+	Y_Dir_judge=Y_Dir>0?1:(Y_Dir<0?-1:0);
 	
-	if(Continue_flag==12
-	&& ((Gray_upleft[0]+Gray_upleft[1]+Gray_upleft[2])==3 
-	&& (Gray_dowmright[0]+Gray_dowmright[1]+Gray_dowmright[2])==3))
-	{
-	    Continue_flag=0;
+	if(Return_Flag == 1)X_Dir_judge=-X_Dir_judge;
+	if(Return_Flag ==-1)Y_Dir_judge=-Y_Dir_judge;
+	
+////X	
+//	if(X_Dir == 0)
+//	{
+//	/********************************/	
+//		if(X_Flag == 0
+//		 &&Gray_xleft_sum > Gray_xRight_sum)
+//		{
+//			X_Flag =1;
+//			X_Dir_judge = 1;
+//		}
+//		
+//		if(X_Flag == 1
+//		&& Gray_xleft_sum <= Gray_xRight_sum)
+//		{
+//			X_Flag =0;
+//			X_Dir_judge = 0;
+//		}
+//	/********************************/	
+//		if(X_Flag == 0
+//		 &&Gray_xleft_sum < Gray_xRight_sum)
+//		{
+//			X_Flag =-1;
+//			X_Dir_judge = -1;
+//		}
+//		
+//		if(X_Flag == -1
+//		&& Gray_xleft_sum <= Gray_xRight_sum)
+//		{
+//			X_Flag =0;
+//			X_Dir_judge = 0;
+//		}
+//	/********************************/	
+//	}
+//	
+////Y	
+//	if(Y_Dir == 0)
+//	{
+//		
+//	/********************************/	
+//		if(Y_Flag == 0
+//		 &&Gray_yUp_sum > Gray_yDown_sum)
+//		{
+//			Y_Flag =1;
+//			Y_Dir_judge = 1;
+//		}
+//		
+//		if(Y_Flag == 1
+//		&& Gray_yUp_sum <= Gray_yDown_sum)
+//		{
+//			Y_Flag =0;
+//			Y_Dir_judge = 0;
+//		}
+//	/********************************/	
+//		if(Y_Flag == 0
+//		 &&Gray_yUp_sum < Gray_yDown_sum)
+//		{
+//			Y_Flag =-1;
+//			Y_Dir_judge = -1;
+//		}
+//		
+//		if(Y_Flag == -1
+//		&& Gray_yUp_sum <= Gray_yDown_sum)
+//		{
+//			Y_Flag =0;
+//			Y_Dir_judge = 0;
+//		}
+//	/********************************/	
+//	}
+	
+	if(Gray_xleft_sum  == 6
+	 &&Gray_xRight_sum == 6
+	)
 		MECANUM_Motor_Data.Speed_Real.x=0;
+	else
+		MECANUM_Motor_Data.Speed_Real.x=200*X_Dir_judge;
+	
+	if(Gray_yUp_sum  == 6
+	 &&Gray_yDown_sum == 6
+	)
 		MECANUM_Motor_Data.Speed_Real.y=0;
-	}
+	else
+		MECANUM_Motor_Data.Speed_Real.y=200*Y_Dir_judge;
+
+	return 0;
+	
 }
