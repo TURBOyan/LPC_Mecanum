@@ -16,6 +16,14 @@ typedef enum
 	Wheel_Sum,
 }WheelNum_Typedef;
 
+typedef enum
+{
+	Front =0,
+	Right ,
+	Back	,
+	Left	,
+}Car_Dir_Typedef;
+
 typedef struct
 {
       int8 x;
@@ -43,8 +51,9 @@ extern struct MECANUM_Motor_Data_Typedef
 	
 	DOUBLE_XY Distance_Real;	//相对地图平移距离
 	
-	INT8_XY Car_Coord_Now,
-					Car_Coord_Set;
+	INT8_XY 				Car_Coord_Now,
+									Car_Coord_Set;
+	Car_Dir_Typedef Car_Dir_Mode;
 	
 	double Speed_GyroZ_Out;
 	double Speed_GyroZ_Set;

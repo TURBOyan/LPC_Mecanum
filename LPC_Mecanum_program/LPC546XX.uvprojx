@@ -10,7 +10,7 @@
       <TargetName>SeekFree_LPC546XX</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060061::V5.06 update 1 (build 61)::ARMCC</pCCUsed>
+      <pCCUsed>5060422::V5.06 update 4 (build 422)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
           <Device>LPC54606J512BD208:M4</Device>
@@ -125,47 +125,6 @@
             <HexOffset>0</HexOffset>
             <Oh166RecLen>16</Oh166RecLen>
           </OPTHX>
-          <Simulator>
-            <UseSimulator>0</UseSimulator>
-            <LoadApplicationAtStartup>1</LoadApplicationAtStartup>
-            <RunToMain>1</RunToMain>
-            <RestoreBreakpoints>1</RestoreBreakpoints>
-            <RestoreWatchpoints>1</RestoreWatchpoints>
-            <RestoreMemoryDisplay>1</RestoreMemoryDisplay>
-            <RestoreFunctions>1</RestoreFunctions>
-            <RestoreToolbox>1</RestoreToolbox>
-            <LimitSpeedToRealTime>0</LimitSpeedToRealTime>
-            <RestoreSysVw>1</RestoreSysVw>
-          </Simulator>
-          <Target>
-            <UseTarget>1</UseTarget>
-            <LoadApplicationAtStartup>1</LoadApplicationAtStartup>
-            <RunToMain>1</RunToMain>
-            <RestoreBreakpoints>1</RestoreBreakpoints>
-            <RestoreWatchpoints>1</RestoreWatchpoints>
-            <RestoreMemoryDisplay>1</RestoreMemoryDisplay>
-            <RestoreFunctions>0</RestoreFunctions>
-            <RestoreToolbox>1</RestoreToolbox>
-            <RestoreTracepoints>1</RestoreTracepoints>
-            <RestoreSysVw>1</RestoreSysVw>
-          </Target>
-          <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>6</TargetSelection>
-          <SimDlls>
-            <CpuDll></CpuDll>
-            <CpuDllArguments></CpuDllArguments>
-            <PeripheralDll></PeripheralDll>
-            <PeripheralDllArguments></PeripheralDllArguments>
-            <InitializationFile></InitializationFile>
-          </SimDlls>
-          <TargetDlls>
-            <CpuDll></CpuDll>
-            <CpuDllArguments></CpuDllArguments>
-            <PeripheralDll></PeripheralDll>
-            <PeripheralDllArguments></PeripheralDllArguments>
-            <InitializationFile></InitializationFile>
-            <Driver>Segger\JL2CM3.dll</Driver>
-          </TargetDlls>
         </DebugOption>
         <Utilities>
           <Flash1>
@@ -369,11 +328,14 @@
             <v6LangP>1</v6LangP>
             <vShortEn>1</vShortEn>
             <vShortWch>1</vShortWch>
+            <v6Lto>0</v6Lto>
+            <v6WtE>0</v6WtE>
+            <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>.\CMSIS;.\Drives\common;.\Drives\inc;.\seekfree;.\USER\inc;.\USER\_OLEDMenu;.\USER\_SONIC;.\USER\_PID;.\USER\_BALANCE;.\USER\_CONTROL;.\USER\_ELECTRON;.\USER\_CAMERA;.\USER\_ELECTRON\_MCP41;.\USER\_UI;.\USER\_MECANUM_CTRL;.\USER\_OLED;.\USER\_DATAHELPER;.\USER\MPU9250\MPU_ForUser;.\USER\MPU9250\MPU9250-Lock\driver\eMPL;.\USER\MPU9250\MPU9250-Lock\driver\include;.\USER\MPU9250\MPU9250-Lock\driver\stm32L;.\USER\MPU9250\MPU9250-Lock\eMPL-hal;.\USER\MPU9250\MPU9250-Lock\mllite;.\USER\MPU9250\MPU9250-Lock\mpl;.\USER\MPU9250\MPU9250-Lock\MPU9250;.\USER\MPU9250\MPU9250-Lock\IIC;.\USER\_GRAY_CTRL</IncludePath>
+              <IncludePath>.\CMSIS;.\Drives\common;.\Drives\inc;.\seekfree;.\USER\inc;.\USER\_OLEDMenu;.\USER\_SONIC;.\USER\_PID;.\USER\_BALANCE;.\USER\_CONTROL;.\USER\_ELECTRON;.\USER\_CAMERA;.\USER\_ELECTRON\_MCP41;.\USER\_UI;.\USER\_MECANUM_CTRL;.\USER\_OLED;.\USER\_DATAHELPER;.\USER\MPU9250\MPU_ForUser;.\USER\MPU9250\MPU9250-Lock\driver\eMPL;.\USER\MPU9250\MPU9250-Lock\driver\include;.\USER\MPU9250\MPU9250-Lock\driver\stm32L;.\USER\MPU9250\MPU9250-Lock\eMPL-hal;.\USER\MPU9250\MPU9250-Lock\mllite;.\USER\MPU9250\MPU9250-Lock\mpl;.\USER\MPU9250\MPU9250-Lock\MPU9250;.\USER\MPU9250\MPU9250-Lock\IIC;.\USER\_GRAY_CTRL;.\USER\_BLUETOOTH</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -386,6 +348,7 @@
             <NoWarn>0</NoWarn>
             <uSurpInc>0</uSurpInc>
             <useXO>0</useXO>
+            <uClangAs>0</uClangAs>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define></Define>
@@ -662,6 +625,11 @@
               <FilePath>.\USER\_GRAY_CTRL\Selfbuild_GrayCtrl.h</FilePath>
             </File>
             <File>
+              <FileName>SelfBuild_BluetoothCtrl.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\USER\_BLUETOOTH\SelfBuild_BluetoothCtrl.h</FilePath>
+            </File>
+            <File>
               <FileName>SelfBuild_PID.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\USER\_PID\SelfBuild_PID.h</FilePath>
@@ -725,6 +693,11 @@
               <FileName>Selfbuild_GrayCtrl.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\USER\_GRAY_CTRL\Selfbuild_GrayCtrl.c</FilePath>
+            </File>
+            <File>
+              <FileName>SelfBuild_BluetoothCtrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\_BLUETOOTH\SelfBuild_BluetoothCtrl.c</FilePath>
             </File>
             <File>
               <FileName>SelfBuild_PID.c</FileName>
@@ -981,5 +954,11 @@
       </Groups>
     </Target>
   </Targets>
+
+  <RTE>
+    <apis/>
+    <components/>
+    <files/>
+  </RTE>
 
 </Project>

@@ -97,7 +97,7 @@ void RIT_DriverIRQHandler(void)
 {
     PIT_FLAG_CLEAR;
 		LED_Fill(0x00);
-	
+		Beep_On;
 		while(1)
 		{
 			LED_P6x8Str(20, 3, "MPU-Interrupt");			//MPU9250的中断服务函数执行时间不能超过10ms，否则将超时警告
@@ -114,90 +114,7 @@ void FLEXCOMM0_DriverIRQHandler(void)
     uart_getchar(USART_0,&Data);
     if(flag & USART_FIFOINTSTAT_RXLVL_MASK)//接收FIFO达到设定水平（库默认设定水平 当接收FIFO有一个数据的时候触发中断）
     {
-			
-			if(mode)
-			{
-				switch(Data)
-				{
-					case 'A': MECANUM_Motor_Data.Speed_Real.x=0;		//前进
-										MECANUM_Motor_Data.Speed_Real.y=MECANUM_Motor_Data.Speed_All; break;
-					
-					case 'H': MECANUM_Motor_Data.Speed_Real.x=-MECANUM_Motor_Data.Speed_All/1.4;		//左前
-										MECANUM_Motor_Data.Speed_Real.y=MECANUM_Motor_Data.Speed_All/1.4; break;
-					
-					case 'G': MECANUM_Motor_Data.Speed_Real.x=-MECANUM_Motor_Data.Speed_All;	//左转
-										MECANUM_Motor_Data.Speed_Real.y=0;   break;
-					
-					case 'F': MECANUM_Motor_Data.Speed_Real.x=-MECANUM_Motor_Data.Speed_All/1.4;	//左后
-										MECANUM_Motor_Data.Speed_Real.y=-MECANUM_Motor_Data.Speed_All/1.4;   break;
-					
-					case 'E': MECANUM_Motor_Data.Speed_Real.x=0;		//后退
-										MECANUM_Motor_Data.Speed_Real.y=-MECANUM_Motor_Data.Speed_All;break;
 
-					case 'D': MECANUM_Motor_Data.Speed_Real.x=MECANUM_Motor_Data.Speed_All/1.4;	//右后
-										MECANUM_Motor_Data.Speed_Real.y=-MECANUM_Motor_Data.Speed_All/1.4;   break;
-					
-					case 'C': MECANUM_Motor_Data.Speed_Real.x=MECANUM_Motor_Data.Speed_All;		//右转
-										MECANUM_Motor_Data.Speed_Real.y=0;   break;
-
-					case 'B': MECANUM_Motor_Data.Speed_Real.x=MECANUM_Motor_Data.Speed_All/1.4;	//右前
-										MECANUM_Motor_Data.Speed_Real.y=MECANUM_Motor_Data.Speed_All/1.4;   break;
-										
-					case 'Z': MECANUM_Motor_Data.Speed_Real.x=0;		//停止
-										MECANUM_Motor_Data.Speed_Real.y=0;
-										MECANUM_Motor_Data.Speed_GyroZ_Set=0;					break;
-										
-					case 'X': MPU_Data.Yaw_MapZero_Save=MPU_Data.Yaw_MapZero;	
-										MPU_Data.Yaw_HeadZero_Aid=90; break;		//右转90度
-										
-					case 'Y': MPU_Data.Yaw_MapZero_Save=MPU_Data.Yaw_MapZero;	
-										MPU_Data.Yaw_HeadZero_Aid=-90;	break;//左转90度
-										
-					case 'p':	Elema_Unabsorb(Elema_Mid);Servo_Down;systick_delay_ms(2000);Servo_Up;break;//放棋子
-					case 'o': Elema_Absorb(Elema_Mid);Servo_Down;systick_delay_ms(2000);Servo_Up;	break;//吸棋子
-					case 'n': Elema_Unabsorb(Elema_Left);	break;//放左障碍
-					case 'm': Elema_Unabsorb(Elema_Right);	break;//放右障碍
-					
-					case 'K': mode=0;
-										MPU_Data.Yaw_CloseLoop_Flag=0; //关闭偏航角闭环
-										MECANUM_Motor_Data.Speed_GyroZ_Set=0;
-										break;
-					default : break;
-				}
-			}
-			else
-			{
-				switch(Data)
-				{
-					case 'A': MECANUM_Motor_Data.Speed_Real.x=0;		//前进
-										MECANUM_Motor_Data.Speed_Real.y=MECANUM_Motor_Data.Speed_All; break;
-					
-					case 'E': MECANUM_Motor_Data.Speed_Real.x=0;		//后退
-										MECANUM_Motor_Data.Speed_Real.y=-MECANUM_Motor_Data.Speed_All;break;
-
-					case 'G': MECANUM_Motor_Data.Speed_GyroZ_Set=-100;	//顺时针
-										break;
-				
-					case 'C': MECANUM_Motor_Data.Speed_GyroZ_Set=100;			//逆时针
-										break;
-					
-					case 'Z': MECANUM_Motor_Data.Speed_Real.x=0;		//停止
-										MECANUM_Motor_Data.Speed_Real.y=0;
-										MECANUM_Motor_Data.Speed_GyroZ_Set=0;			
-										break;
-										
-					case 'X': MECANUM_Motor_Data.Speed_All=2000; break;		//高速
-										
-					case 'Y': MECANUM_Motor_Data.Speed_All=500;break;//低速
-					
-					case 'J': mode=1;
-										MPU_Data.Yaw_CloseLoop_Flag=1; //开启偏航角闭环
-										MPU_Data.Yaw_MapZero_Save=MPU_Data.Yaw_MapZero;	
-										MPU_Data.Yaw_HeadZero_Aid=0;
-										break;
-					default : break;
-				}
-			}
     }
     if(flag & USART_FIFOINTSTAT_RXERR_MASK)//接收FIFO错误
     {

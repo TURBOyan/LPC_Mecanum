@@ -1,6 +1,6 @@
 #include "Selfbuild_GrayCtrl.h"
 
-
+#ifdef old_PCN
 PIN_enum Gray[6][6]={		//光电管位置（第一行为车头）
 {B31, A0, B11, B15 , A2,B30},
 {A6,0xff,0xff,0xff,0xff,B16},
@@ -9,6 +9,18 @@ PIN_enum Gray[6][6]={		//光电管位置（第一行为车头）
 {B20,0xff,0xff,0xff,0xff,A17},
 {B19,B18 , B6 ,A21 , A20 ,B28},
 };
+#endif
+
+#ifdef new_PCB
+PIN_enum Gray[6][6]={		//光电管位置（第一行为车头）
+{B31, A0, B11, A2 ,B17 ,B15},
+{A6,0xff,0xff,0xff,0xff,B16},
+{A19,0xff,0xff,0xff,0xff,A5},
+{A10 ,0xff,0xff,0xff,0xff,A18},	
+{B20,0xff,0xff,0xff,0xff,A17},
+{B19,B18 , B6 ,A21 , A20 ,B28},
+};
+#endif
 
 //PIN_enum Gray[6][6]={		//光电管位置（第一行为车头）
 //{B31 , A0 , B11,0xff,0xff,0xff},
@@ -61,8 +73,6 @@ void Read_GrayData(uint8 x,uint8 y,uint8 showflag)	//读取光电管值并设定是否显示
 
 void Save_GrayData(uint8 data_new[6][6],uint8 data_save[6][6])	//保存光电管值
 {
-	
-	
 	for(uint8 row=0;row<6;row++)
 	{
 		for(uint8 col=0;col<6;col++)
@@ -91,6 +101,8 @@ void Judge_GrayData(void)	//跳变点检测
 	}
 }
 
+#define Gray_Aid_Num 5
+
 uint8 Gray_Calibration_X(int16 X_Dir,int8 Return_Flag)
 {
 	static uint16 Continue_flag;
@@ -109,29 +121,46 @@ uint8 Gray_Calibration_X(int16 X_Dir,int8 Return_Flag)
 		Gray_xRight_sum+=Gray_xRight[num];
 	}
 	
-	if(Gray_xleft_sum  == 6
-	 &&Gray_xRight_sum == 6
+	if(Gray_xleft_sum  == Gray_Aid_Num
+	 &&Gray_xRight_sum == Gray_Aid_Num
 		)
 	{
+		Continue_flag = 0;
+		MECANUM_Motor_Data.Speed_Real.x=0;
 		return 1;
 	}
 	X_Dir_judge=X_Dir>0?1:(X_Dir<0?-1:0);
 	
 	if(Return_Flag == 1)X_Dir_judge=-X_Dir_judge;
 	
-	if(Gray_xleft_sum  == 6
-	 &&Gray_xRight_sum == 6
-	)
-		MECANUM_Motor_Data.Speed_Real.x=0;
-	else
+	if(Continue_flag == 0)
+		MECANUM_Motor_Data.Speed_Real.x=500*X_Dir_judge;
+	
+	if(Continue_flag == 0
+		&&(Gray_xleft_sum  == Gray_Aid_Num ||Gray_xRight_sum  == Gray_Aid_Num))
+	{
+		Continue_flag = 1;
 		MECANUM_Motor_Data.Speed_Real.x=200*X_Dir_judge;
+	}
+	
+	if( Continue_flag == 1
+	 &&	Gray_xleft_sum  == Gray_Aid_Num
+	 && Gray_xRight_sum == Gray_Aid_Num
+	)
+	{
+		Continue_flag = 0;
+		MECANUM_Motor_Data.Speed_Real.x=0;
+		return 1;
+	}
 
 	return 0;
 	
 }
+
+
 uint8 Gray_Calibration_Y(int16 Y_Dir,int8 Return_Flag)
 {
-	static uint16 Continue_flag;
+	static uint16 Continue_flag=0;
 	uint8 Gray_yUp[6]	 	 	 ,Gray_yDown[6],
 				Gray_yUp_sum=0	 ,Gray_yDown_sum=0;
 	
@@ -147,23 +176,36 @@ uint8 Gray_Calibration_Y(int16 Y_Dir,int8 Return_Flag)
 		Gray_yDown_sum+=Gray_yDown[num];
 	}
 	
-	if(Gray_yUp_sum    == 6
-	 &&Gray_yDown_sum  == 6)
+	if(Gray_yUp_sum    == Gray_Aid_Num
+	 &&Gray_yDown_sum  == Gray_Aid_Num)
 	{
+		MECANUM_Motor_Data.Speed_Real.y=0;
 		return 1;
 	}
 
 	Y_Dir_judge=Y_Dir>0?1:(Y_Dir<0?-1:0);
 	
-	if(Return_Flag ==-1)Y_Dir_judge=-Y_Dir_judge;
+	if(Return_Flag ==1)Y_Dir_judge=-Y_Dir_judge;
 	
-	if(Gray_yUp_sum  == 6
-	 &&Gray_yDown_sum == 6
-	)
-		MECANUM_Motor_Data.Speed_Real.y=0;
-	else
+	if(Continue_flag == 0)
+		MECANUM_Motor_Data.Speed_Real.y=500*Y_Dir_judge;
+	
+	if(Continue_flag == 0
+		&&(Gray_yUp_sum  == Gray_Aid_Num ||Gray_yDown_sum  == Gray_Aid_Num))
+	{
+		Continue_flag = 1;
 		MECANUM_Motor_Data.Speed_Real.y=200*Y_Dir_judge;
-
+	}
+	
+	if( Continue_flag == 1
+	 &&	Gray_yUp_sum  == Gray_Aid_Num
+	 && Gray_yDown_sum == Gray_Aid_Num
+	)
+	{
+		Continue_flag = 0;
+		MECANUM_Motor_Data.Speed_Real.y=0;
+		return 1;
+	}
 	return 0;
 	
 }
