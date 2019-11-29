@@ -6,6 +6,7 @@
 #define a_PARAMETER_cm 18
 #define b_PARAMETER_cm 18
 
+
 typedef enum
 {
 	Left_Front =0,
@@ -51,9 +52,16 @@ extern struct MECANUM_Motor_Data_Typedef
 	
 	DOUBLE_XY Distance_Real;	//相对地图平移距离
 	
-	INT8_XY 				Car_Coord_Now,
-									Car_Coord_Set;
-	Car_Dir_Typedef Car_Dir_Mode;
+	INT8_XY 				Car_Coord_Now,		//此时的机器人坐标
+									Car_Coord_Set;		//期望的机器人坐标
+	Car_Dir_Typedef Car_Dir_Mode;			//设置的机器人朝向
+	
+	INT8_XY         Chess_Coord_Now,	//上次的棋子坐标
+									Chess_Coord_Set;	//设定的棋子坐标
+	
+	uint8 Car_Arrive_Flag;					//到达目标坐标标志位
+	uint8 Car_RunPlayChess_Flag;		//下棋允许标志位
+	
 	
 	double Speed_GyroZ_Out;
 	double Speed_GyroZ_Set;
@@ -72,5 +80,8 @@ void Wheel_Speed_Get_cm_s(void);
 void Wheel_Speed_Real_Get(void);
 void Wheel_Speed_PID(void);
 void Motor_PWM_Set(int16 PWM_MAX);
+
+void Car_Turn_Right_90(Car_Dir_Typedef* Car_Dir_Mode);
+void Car_Turn_Left_90(Car_Dir_Typedef* Car_Dir_Mode);
 
 #endif

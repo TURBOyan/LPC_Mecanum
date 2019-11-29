@@ -114,3 +114,25 @@ void Motor_PWM_Set(int16 PWM_MAX)	//PWM输出
 		sct_pwm_duty(Motor_PWM[1][(uint8)num],(uint16)MECANUM_Motor_Data.SPEED_Set_cm_s[(uint8)num]);
 	}
 }
+
+void Car_Turn_Right_90(Car_Dir_Typedef* Car_Dir_Mode)		//全车右转90度，并保存车身方向
+{
+	if(*Car_Dir_Mode == Left)
+		*Car_Dir_Mode = Front;
+	else
+		*Car_Dir_Mode += 1;
+	
+	MPU_Data.Yaw_MapZero_Save=MPU_Data.Yaw_MapZero;	
+	MPU_Data.Yaw_HeadZero_Aid=90;
+}
+
+void Car_Turn_Left_90(Car_Dir_Typedef* Car_Dir_Mode)		//全车左转90度，并保存车身方向
+{
+	if(*Car_Dir_Mode == Front)
+		*Car_Dir_Mode = Left;
+	else
+		*Car_Dir_Mode -= 1;
+	
+	MPU_Data.Yaw_MapZero_Save=MPU_Data.Yaw_MapZero;	
+	MPU_Data.Yaw_HeadZero_Aid=-90;
+}

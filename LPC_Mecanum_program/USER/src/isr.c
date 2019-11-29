@@ -29,10 +29,19 @@ void PIN_INT1_DriverIRQHandler(void)
 		enable_irq(RIT_IRQn);
 		static int8 x,y;
 		static uint8 count;
-/*********************以下放自己的控制代码******************************************************************************/
-/**																																																								  ***/
-/**																																																								  ***/
-/**																																																								  ***/
+	
+/*********************指令解析******************************************************************************/	
+		if(MECANUM_Motor_Data.Car_RunPlayChess_Flag == 0)		
+		{
+			Uart_Receive_Ctrl(10);		//指令数据保存
+			Chess_Before_Ctrl();			//下棋前准备工作指令解析
+		}
+		else
+		{
+			Chess_Ctrl();							//下棋控制指令解析
+		}
+		
+/*********************准备工作******************************************************************************/
 		Read_ButtSwitData();			//读取按键值
 		Refresh_MPUTeam(DMP_MPL); //读取三态角
 		Read_GrayData(95,2,1);		//读取光电管值，并显示在95列，第3行的位置
@@ -53,6 +62,8 @@ void PIN_INT1_DriverIRQHandler(void)
 /**/			}
 /**/		}
 /**//**************************************************************************************/	
+
+/*********************以下为指令执行部分******************************************************************************/
 		Distance_Coarse(&MECANUM_Motor_Data.Car_Coord_Now.x		//距离粗调+光电管细调
 											,&MECANUM_Motor_Data.Car_Coord_Now.y
 											, MECANUM_Motor_Data.Car_Coord_Set.x
@@ -69,7 +80,7 @@ void PIN_INT1_DriverIRQHandler(void)
 		
 		Wheel_Analysis();					//目标速度计算 
     Motor_PWM_Set(9999);			//PWM赋值
-	
+/*********************以上为指令执行部分******************************************************************************/	
 	
 /**//*****************************临时代码***********************************************/
 /**/		OLED_P6x8Int(0, 0, MECANUM_Motor_Data.Distance_Real.x, -5);
@@ -78,14 +89,9 @@ void PIN_INT1_DriverIRQHandler(void)
 /**/		OLED_P6x8Int(0, 3, MECANUM_Motor_Data.Speed_Real.y, -5);		
 /**/		OLED_P6x8Int(0, 4, x, -1);
 /**/		OLED_P6x8Int(15, 4, y, -1);	
-/**//**************************************************************************************/	
-		
-		
-/**																																																								  ***/
-/**																																																								  ***/		
-/**																																																								  ***/	
+/**//**************************************************************************************/
+
 /*********************以上放自己的控制代码******************************************************************************/	
-	
 		DataSend(0);//上位机数据发送，1为开启，0为关闭
     pit_clean();						//清除定时器计时
 		disable_irq(RIT_IRQn);	//关闭计时
@@ -108,13 +114,11 @@ void RIT_DriverIRQHandler(void)
 void FLEXCOMM0_DriverIRQHandler(void)
 {
     vuint32 flag;
-		uint8 Data;
     flag = UART0_FIFO_FLAG;
-		static uint8 mode=1;
-    uart_getchar(USART_0,&Data);
+
     if(flag & USART_FIFOINTSTAT_RXLVL_MASK)//接收FIFO达到设定水平（库默认设定水平 当接收FIFO有一个数据的时候触发中断）
     {
-
+				uart_getchar(USART_0,&Computer_communi.Data[Computer_communi.Data_Point++]);
     }
     if(flag & USART_FIFOINTSTAT_RXERR_MASK)//接收FIFO错误
     {

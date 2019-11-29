@@ -88,6 +88,10 @@
 #define Elema_Absorb(x)   gpio_set(x,1)			//电磁铁吸起
 #define Elema_Unabsorb(x) gpio_set(x,0)			//电磁铁放下
 
+#define Elema_Mid_Sensor B0
+#define Elema_Mid_Sensor_Init  gpio_init(Elema_Mid_Sensor,GPI,0,PULLUP)	//电磁铁初始化
+#define Elema_Mid_Sensor_Read  gpio_get(Elema_Mid_Sensor)==0
+
 
 ////串口
 //#define Bluetooth_UART     USART_0
