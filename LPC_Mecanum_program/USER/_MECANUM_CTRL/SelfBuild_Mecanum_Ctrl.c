@@ -9,10 +9,20 @@ float Speed_Ratio=(3.7*2*3.1415926)/(1024.0*18.0*0.01);	//(半径'cm'*半径'cm'*pai
 uint8 Encoder_Pulse_TIMER[Wheel_Sum+1]={TIMER3_COUNT0_A4,TIMER1_COUNT0_A16,TIMER0_COUNT0_A1,TIMER4_COUNT0_A15};//编码器计数时钟
 uint8 Encoder_Dir_Pin[Wheel_Sum+1]		={	      B29			 ,        B8			,        B14			,        B21     };//编码器方向口
 uint8 Encoder_Dir_Set[Wheel_Sum+1]		={				0        ,         0      ,        1        ,         1      };
-uint8 Motor_PWM[2][Wheel_Sum+1]				={
-																			 {TIMER2_PWMCH1_B4    ,TIMER2_PWMCH0_B5  ,TIMER0_PWMCH1_A3    ,TIMER2_PWMCH2_B7}		//正转
-																			,{SCT0_OUT8_A29    ,SCT0_OUT6_A27    ,SCT0_OUT9_A30    ,SCT0_OUT5_A26   }		//倒转
-																			 };																			 
+#ifdef old_PCB
+	uint8 Motor_PWM[2][Wheel_Sum+1]				={
+																				 {TIMER2_PWMCH1_B4    ,TIMER2_PWMCH0_B5  ,TIMER0_PWMCH1_A3    ,TIMER2_PWMCH2_B7}		//正转
+																				,{SCT0_OUT8_A29    ,SCT0_OUT6_A27    ,SCT0_OUT9_A30    ,SCT0_OUT5_A26   }		//倒转
+																				 };						
+#endif
+																			 
+#ifdef new_PCB
+	uint8 Motor_PWM[2][Wheel_Sum+1]				={
+																				 {TIMER2_PWMCH1_B4    ,TIMER2_PWMCH0_B5  ,TIMER0_PWMCH1_A3    ,TIMER2_PWMCH2_B7}		//正转
+																				,{SCT0_OUT3_A22    ,SCT0_OUT6_A27    ,SCT0_OUT4_A23    ,SCT0_OUT7_A28   }		//倒转
+																				 };						
+#endif																			 
+																			 
 /**************************************************************************
 函数功能：根据期望的XY轴速度和旋转角速度得出每个轮子的速度,X型安装，最后将此函数周期调用
 入口参数：无
@@ -101,6 +111,6 @@ void Motor_PWM_Set(int16 PWM_MAX)	//PWM输出
 		MECANUM_Motor_Data.SPEED_Set_cm_s[(uint8)num]=RANGE(MECANUM_Motor_Data.SPEED_Set_cm_s[(uint8)num],1000,-1000);		//PWM限幅
 		MECANUM_Motor_Data.SPEED_Set_cm_s[(uint8)num]+=MECANUM_Motor_Data.PWM_Mid
 																									+((MECANUM_Motor_Data.SPEED_Set_cm_s[(uint8)num]<0)?-50:(MECANUM_Motor_Data.SPEED_Set_cm_s[(uint8)num]>0?50:0));
-		ctimer_pwm_duty(Motor_PWM[0][(uint8)num],(uint16)MECANUM_Motor_Data.SPEED_Set_cm_s[(uint8)num]);
+		sct_pwm_duty(Motor_PWM[1][(uint8)num],(uint16)MECANUM_Motor_Data.SPEED_Set_cm_s[(uint8)num]);
 	}
 }

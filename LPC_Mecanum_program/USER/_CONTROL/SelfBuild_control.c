@@ -39,7 +39,7 @@ void Init_ALL(void)		//全车初始化
 
 	for(WheelNum_Typedef num=0;num<Wheel_Sum;num++)		//电机相关初始化
 	{
-		ctimer_pwm_init(Motor_PWM[0][(uint8)num],250,MECANUM_Motor_Data.PWM_Mid);  //正转PWM
+		sct_pwm_init(Motor_PWM[1][(uint8)num],250,MECANUM_Motor_Data.PWM_Mid);  //正转PWM
 	}
 	
 	OLED_Init();
@@ -55,7 +55,7 @@ void Init_ALL(void)		//全车初始化
 	
 	View_MPUddata();
 	
-	pint_init(PINT_CH1, B0, FALLING);		//MPU9250的INT引脚连接在A3上，设置为下降沿触发
+	pint_init(PINT_CH1, B14, FALLING);		//MPU9250的INT引脚连接在A3上，设置为下降沿触发
 	set_irq_priority(PIN_INT1_IRQn,1);//设置优先级 越低优先级越高
 	
 	enable_irq(PIN_INT1_IRQn);		//开启引脚中断

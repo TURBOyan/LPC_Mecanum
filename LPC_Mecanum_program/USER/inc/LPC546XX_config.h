@@ -72,6 +72,11 @@
 #define DEBUG_UART_TX_PIN           UART0_TX_A25
 #define DEBUG_UART_RX_PIN           UART0_RX_A24
 
+//#define DEBUG_UART                  USART_2
+//#define DEBUG_UART_BAUD             115200
+//#define DEBUG_UART_TX_PIN           UART2_TX_B25
+//#define DEBUG_UART_RX_PIN           UART2_RX_B24
+
 //-------------------------------------------------------------------------------------------------------------------
 //  DEBUG_INFO 为 0                  不输出断言信息
 //  DEBUG_INFO 为 1                  输出断言信息，断言信息包含错误所在文件及所在行  需要PRINTF宏定义为1才能有效输出

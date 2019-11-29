@@ -12,7 +12,7 @@ int main(void)
 	MECANUM_Motor_Data.Car_Coord_Now.x=0;		//设置初始坐标
 	MECANUM_Motor_Data.Car_Coord_Now.y=0;
 	MECANUM_Motor_Data.Car_Coord_Set.x=0;		//设置期望坐标
-	MECANUM_Motor_Data.Car_Coord_Set.y=0;
+	MECANUM_Motor_Data.Car_Coord_Set.y =0;
 /*****************************************************************/
 	
 	EnableInterrupts;//全车开始运行，以10ms控制周期进行控制
@@ -20,5 +20,6 @@ int main(void)
 	while(1)
 	{	
 		//所有的控制代码在isr.c的PIN_INT1_DriverIRQHandler()外部中断服务函数内，中断由MPU9250的INT引脚控制，默认10ms周期
+	//	printf("2342525");
 	}
 }
