@@ -163,14 +163,7 @@ uint8 Distance_Coarse(int8* X_Now,int8* Y_Now,int8 X_Set,int8 Y_Set)
 			Continue_Flag_x=1;
 			Return_Flag_x=1;
 			MECANUM_Motor_Data.Distance_Real.x = 0;
-			if(*X_Now >= 6)
-			{
-				Distance_SetX=-15;
-			}
-			else
-			{
-				Distance_SetX=15;
-			}
+			Distance_SetX=-15;
 		}
 		if(Continue_Flag_x == 1)	//当允许粗调时，开始粗调-x
 		{
@@ -237,14 +230,7 @@ uint8 Distance_Coarse(int8* X_Now,int8* Y_Now,int8 X_Set,int8 Y_Set)
 			Continue_Flag_y=1;
 			Return_Flag_y=1;
 			MECANUM_Motor_Data.Distance_Real.y = 0;
-			if(*Y_Now >= 6)
-			{
-				Distance_SetY=15;
-			}
-			else
-			{
-				Distance_SetY=-15;
-			}
+			Distance_SetY=-15;
 		}
 		if(Continue_Flag_y == 1)	//当允许粗调时，开始粗调-x
 		{
