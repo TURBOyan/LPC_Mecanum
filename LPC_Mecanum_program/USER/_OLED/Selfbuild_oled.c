@@ -727,7 +727,7 @@ void LED_P6x8Char(byte x,byte y,byte ch)
 //参数：x为显示的横坐标0~122，y为页范围0～7，要显示的字符串
 //返回：无
 //==============================================================  
-void LED_P6x8Str(byte x,byte y,const char* ch)
+void LED_P6x8Str(byte x,byte y,char* ch)
 {
 	byte c=0,i=0,j=0;      
 	while (ch[j]!='\0')

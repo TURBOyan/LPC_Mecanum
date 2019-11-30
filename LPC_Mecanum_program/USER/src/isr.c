@@ -27,8 +27,6 @@ void PIN_INT1_DriverIRQHandler(void)
 		pit_init_ms(10);		//开启10ms计时，防止本中断执行时间超过10ms
 		set_irq_priority(RIT_IRQn,0);
 		enable_irq(RIT_IRQn);
-		static int8 x,y;
-		static uint8 count;
 	
 /*********************指令解析******************************************************************************/	
 		if(MECANUM_Motor_Data.Car_RunPlayChess_Flag == 0)		
@@ -45,23 +43,6 @@ void PIN_INT1_DriverIRQHandler(void)
 		Read_ButtSwitData();			//读取按键值
 		Refresh_MPUTeam(DMP_MPL); //读取三态角
 		Read_GrayData(95,2,1);		//读取光电管值，并显示在95列，第3行的位置
-
-/**//*****************************临时代码***********************************************/
-/**/		count++;
-/**/		if(count >=20)
-/**/		{
-/**/			count=0;
-/**/			if(Query_ButtSwitData(Button_Data,Button_Up_Data))y++;
-/**/			if(Query_ButtSwitData(Button_Data,Button_Down_Data))y--;
-/**/			if(Query_ButtSwitData(Button_Data,Button_Right_Data))x++;
-/**/			if(Query_ButtSwitData(Button_Data,Button_Left_Data))x--;
-/**/			if(Query_ButtSwitData(Button_Data,Button_Mid_Data))
-/**/			{
-/**/				MECANUM_Motor_Data.Car_Coord_Set.x=x;
-/**/				MECANUM_Motor_Data.Car_Coord_Set.y=y;
-/**/			}
-/**/		}
-/**//**************************************************************************************/	
 
 /*********************以下为指令执行部分******************************************************************************/
 		Distance_Coarse(&MECANUM_Motor_Data.Car_Coord_Now.x		//距离粗调+光电管细调
@@ -87,8 +68,8 @@ void PIN_INT1_DriverIRQHandler(void)
 /**/		OLED_P6x8Int(0, 1, MECANUM_Motor_Data.Distance_Real.y, -5);
 /**/		OLED_P6x8Int(0, 2, MECANUM_Motor_Data.Speed_Real.x, -5);
 /**/		OLED_P6x8Int(0, 3, MECANUM_Motor_Data.Speed_Real.y, -5);		
-/**/		OLED_P6x8Int(0, 4, x, -1);
-/**/		OLED_P6x8Int(15, 4, y, -1);	
+/**/		OLED_P6x8Int(0, 4,MECANUM_Motor_Data.Car_Coord_Set.x, -1);
+/**/		OLED_P6x8Int(15, 4, MECANUM_Motor_Data.Car_Coord_Set.y, -1);	
 /**//**************************************************************************************/
 
 /*********************以上放自己的控制代码******************************************************************************/	

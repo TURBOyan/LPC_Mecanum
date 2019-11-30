@@ -8,7 +8,7 @@ void Init_ALL(void)		//全车初始化
 	Beep_Init;	//蜂鸣器
 	Servo_Init;	//磁铁舵机
 	Elema_Init(Elema_Mid);	//电磁铁
-	Elema_Init(Elema_Left); 
+	Elema_Init(Elema_Front); 
 	Elema_Init(Elema_Right);
 	Elema_Mid_Sensor_Init;
 	gpio_init(Button_Up,GPI,0,PULLUP);
@@ -52,9 +52,9 @@ void Init_ALL(void)		//全车初始化
 	while(!Menu_Work()) systick_delay_ms(200);    //菜单每200ms工作一次，并根据是否按下“关闭菜单”选项后（函数返回0）结束死循环
 	PID_Dis[1].Param_Kp=PID_Dis[0].Param_Kp;
 	PID_Dis[1].Param_Kd=PID_Dis[0].Param_Kd;
-//	Elema_Absorb(Elema_Left);
+	Elema_Absorb(Elema_Front);
 //	Elema_Absorb(Elema_Right);
-	
+	//Elema_Absorb(Elema_Mid);
 	LED_P6x8Str(20,  2, "Wait MPU6050......");
   while(MPU_Init_ForUser()){if(gpio_get(Button_Up) == 0){while(gpio_get(Button_Up) == 0){};break;}} 	//初始化MPL
   LED_CLS(); 
@@ -62,9 +62,10 @@ void Init_ALL(void)		//全车初始化
 	
 	pint_init(PINT_CH1, B14, FALLING);		//MPU9250的INT引脚连接在B14上，设置为下降沿触发
 	set_irq_priority(PIN_INT1_IRQn,1);//设置优先级 越低优先级越高
-	
 	enable_irq(PIN_INT1_IRQn);		//开启引脚中断
-	uart_rx_irq(USART_0,2); 	//蓝牙遥控中断开启
+	
+	uart_rx_irq(USART_0,1); 	//蓝牙遥控中断开启
+	set_irq_priority(FLEXCOMM0_IRQn,0);
 	
 	DisableInterrupts;  
 }
@@ -268,6 +269,7 @@ uint8 Distance_Coarse(int8* X_Now,int8* Y_Now,int8 X_Set,int8 Y_Set)
 		}
 		
 		if(	 Continue_Flag_y == 1					//当接近目标坐标时，且回调标志位未被置位，停止粗调，开始细调
+		&& Return_Flag_y == 0
 		&&(MECANUM_Motor_Data.Distance_Real.y >=Distance_SetY-30)
 		&&(MECANUM_Motor_Data.Distance_Real.y <=Distance_SetY+30)
 		)
@@ -304,13 +306,7 @@ uint8 Distance_Coarse(int8* X_Now,int8* Y_Now,int8 X_Set,int8 Y_Set)
 		{
 			Continue_Flag_x=0;
 			Continue_Flag_y=0;
-			MECANUM_Motor_Data.Car_Arrive_Flag = 1;			//坐标移动完成
-			if(MECANUM_Motor_Data.Car_Dir_Mode == Front)
-			{
-				MPU_Data.Yaw_Save=MPU_Data.Yaw;	//重新校准地图坐标
-				MPU_Data.Yaw_HeadZero_Aid=0;
-				MPU_Data.Yaw_MapZero_Save=0;
-			}
+	 		MECANUM_Motor_Data.Car_Arrive_Flag = 1;			//坐标移动完成
 		}
 
 }

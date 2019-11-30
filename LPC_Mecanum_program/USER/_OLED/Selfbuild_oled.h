@@ -46,7 +46,7 @@ void  OLED_Init(void);
  void LED_WrCmd(uint8 cmd); //Ð´ÃüÁîº¯Êý
  void LED_Set_Pos(byte x, byte y);
  void LED_P6x8Char(byte x,byte y,byte ch);
-void LED_P6x8Str(byte x,byte y,const char* ch);
+void LED_P6x8Str(byte x,byte y,char* ch);
 void OLED_P6x8Int(uint8_t x, uint8_t y, int16_t data1, int8 set);
 void OLED_P6x8Flo(uint8_t x, uint8_t y, float data1, int8 set);
  void LED_P8x16Char(byte x,byte y,byte ch);

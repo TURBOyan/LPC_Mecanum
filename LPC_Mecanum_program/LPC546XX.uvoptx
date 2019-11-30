@@ -118,9 +118,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>€衪
-?輜€衪
-</Name>
+          <Name>P蜈</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -157,40 +155,51 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>162</LineNumber>
+          <LineNumber>27</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>29938</Address>
+          <Address>68774</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>F:\2019 smart car competition\浜斿瓙妫嬫満鍣ㄤ汉\LPC_Mecanum\LPC_Mecanum_program\USER\_CONTROL\SelfBuild_control.c</Filename>
+          <Filename>F:\2019 smart car competition\浜斿瓙妫嬫満鍣ㄤ汉\LPC_Mecanum\LPC_Mecanum_program\USER\src\main.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\LPC546XX\USER/_CONTROL/SelfBuild_control.c\162</Expression>
+          <Expression>\\LPC546XX\USER/src/main.c\27</Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>21</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>68750</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>F:\2019 smart car competition\浜斿瓙妫嬫満鍣ㄤ汉\LPC_Mecanum\LPC_Mecanum_program\USER\src\main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\LPC546XX\USER/src/main.c\21</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Gray_Flag_y</ItemText>
+          <ItemText>Computer_communi.Data</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Gray_Flag_x</ItemText>
+          <ItemText>MECANUM_Motor_Data.Chess_Coord_Now</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Continue_Flag</ItemText>
-        </Ww>
-        <Ww>
-          <count>3</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>MECANUM_Motor_Data.Speed_Real.x</ItemText>
+          <ItemText>MECANUM_Motor_Data.Chess_Coord_Set</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

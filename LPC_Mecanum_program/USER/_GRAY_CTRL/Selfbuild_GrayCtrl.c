@@ -110,9 +110,8 @@ uint8 Gray_Calibration_X(int16 X_Dir,int8 Return_Flag)
 				Gray_xleft_sum=0 ,Gray_xRight_sum=0;
 	
 	int8 X_Dir_judge;	//保存运动方向
-	static int8 X_Flag=0;
-	
 	for(uint8 num=0;num<6;num++)
+	
 	{
 		Gray_xleft[num]=Base_Data.Gray_Data[num][0];	//保存左侧光电管值
 		Gray_xleft_sum+=Gray_xleft[num];
@@ -121,8 +120,8 @@ uint8 Gray_Calibration_X(int16 X_Dir,int8 Return_Flag)
 		Gray_xRight_sum+=Gray_xRight[num];
 	}
 	
-	if(Gray_xleft_sum  == Gray_Aid_Num
-	 &&Gray_xRight_sum == Gray_Aid_Num
+	if(Gray_xleft_sum  >= Gray_Aid_Num
+	 &&Gray_xRight_sum >= Gray_Aid_Num
 		)
 	{
 		Continue_flag = 0;
@@ -137,15 +136,15 @@ uint8 Gray_Calibration_X(int16 X_Dir,int8 Return_Flag)
 		MECANUM_Motor_Data.Speed_Real.x=500*X_Dir_judge;
 	
 	if(Continue_flag == 0
-		&&(Gray_xleft_sum  == Gray_Aid_Num ||Gray_xRight_sum  == Gray_Aid_Num))
+		&&(Gray_xleft_sum  >= Gray_Aid_Num ||Gray_xRight_sum  >= Gray_Aid_Num))
 	{
 		Continue_flag = 1;
 		MECANUM_Motor_Data.Speed_Real.x=200*X_Dir_judge;
 	}
 	
 	if( Continue_flag == 1
-	 &&	Gray_xleft_sum  == Gray_Aid_Num
-	 && Gray_xRight_sum == Gray_Aid_Num
+	 &&	Gray_xleft_sum  >= Gray_Aid_Num
+	 && Gray_xRight_sum >= Gray_Aid_Num
 	)
 	{
 		Continue_flag = 0;
@@ -165,7 +164,6 @@ uint8 Gray_Calibration_Y(int16 Y_Dir,int8 Return_Flag)
 				Gray_yUp_sum=0	 ,Gray_yDown_sum=0;
 	
 	int8 Y_Dir_judge;	//保存运动方向
-	static int8 Y_Flag=0;
 	
 	for(uint8 num=0;num<6;num++)
 	{
@@ -176,9 +174,10 @@ uint8 Gray_Calibration_Y(int16 Y_Dir,int8 Return_Flag)
 		Gray_yDown_sum+=Gray_yDown[num];
 	}
 	
-	if(Gray_yUp_sum    == Gray_Aid_Num
-	 &&Gray_yDown_sum  == Gray_Aid_Num)
+	if(Gray_yUp_sum    >= Gray_Aid_Num
+	 &&Gray_yDown_sum  >= Gray_Aid_Num)
 	{
+		Continue_flag = 0;
 		MECANUM_Motor_Data.Speed_Real.y=0;
 		return 1;
 	}
@@ -191,15 +190,15 @@ uint8 Gray_Calibration_Y(int16 Y_Dir,int8 Return_Flag)
 		MECANUM_Motor_Data.Speed_Real.y=500*Y_Dir_judge;
 	
 	if(Continue_flag == 0
-		&&(Gray_yUp_sum  == Gray_Aid_Num ||Gray_yDown_sum  == Gray_Aid_Num))
+		&&(Gray_yUp_sum  >= Gray_Aid_Num ||Gray_yDown_sum  >= Gray_Aid_Num))
 	{
 		Continue_flag = 1;
 		MECANUM_Motor_Data.Speed_Real.y=200*Y_Dir_judge;
 	}
 	
 	if( Continue_flag == 1
-	 &&	Gray_yUp_sum  == Gray_Aid_Num
-	 && Gray_yDown_sum == Gray_Aid_Num
+	 &&	Gray_yUp_sum  >= Gray_Aid_Num
+	 && Gray_yDown_sum >= Gray_Aid_Num
 	)
 	{
 		Continue_flag = 0;
@@ -207,5 +206,4 @@ uint8 Gray_Calibration_Y(int16 Y_Dir,int8 Return_Flag)
 		return 1;
 	}
 	return 0;
-	
 }
