@@ -52,6 +52,8 @@ extern struct MECANUM_Motor_Data_Typedef
 	
 	DOUBLE_XY Distance_Real;	//相对地图平移距离
 	
+	INT8_XY				  Car_Begin;		//全车出发点
+	
 	INT8_XY 				Car_Coord_Now,		//此时的机器人坐标
 									Car_Coord_Set;		//期望的机器人坐标
 	Car_Dir_Typedef Car_Dir_Mode;			//设置的机器人朝向

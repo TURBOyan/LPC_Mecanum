@@ -30,9 +30,9 @@ void Init_ALL(void)		//全车初始化
 	{
 		for(uint8 col=0;col<6;col++)
 		{
-			if((uint8)(Gray[row][col])!=0xff)
+			if((uint8)(Gray_Front[row][col])!=0xff)
 			{
-				gpio_init(Gray[row][col],GPI,0,PULLUP);	
+				gpio_init(Gray_Front[row][col],GPI,0,PULLUP);	
 			}
 		}
 	}
@@ -52,9 +52,10 @@ void Init_ALL(void)		//全车初始化
 	while(!Menu_Work()) systick_delay_ms(200);    //菜单每200ms工作一次，并根据是否按下“关闭菜单”选项后（函数返回0）结束死循环
 	PID_Dis[1].Param_Kp=PID_Dis[0].Param_Kp;
 	PID_Dis[1].Param_Kd=PID_Dis[0].Param_Kd;
+
+	Elema_Absorb(Elema_Right);//吸起障碍
 	Elema_Absorb(Elema_Front);
-//	Elema_Absorb(Elema_Right);
-	//Elema_Absorb(Elema_Mid);
+	
 	LED_P6x8Str(20,  2, "Wait MPU6050......");
   while(MPU_Init_ForUser()){if(gpio_get(Button_Up) == 0){while(gpio_get(Button_Up) == 0){};break;}} 	//初始化MPL
   LED_CLS(); 
@@ -139,11 +140,6 @@ void MPU_Yaw_Closeloop(void)
 		{
 			MECANUM_Motor_Data.Speed_GyroZ_Out=MECANUM_Motor_Data.Speed_GyroZ_Set;
 		}
-		
-//		OLED_P6x8Flo(60, 2, MPU_Data.Yaw_Aid, -3);
-//		OLED_P6x8Flo(60, 3, MPU_Data.Yaw_Real, -3);
-//		OLED_P6x8Flo(60, 4, MPU_Data.Yaw_Save, -3);
-//		OLED_P6x8Int(0, 5, MECANUM_Motor_Data.Speed_GyroZ_Out, -5);
 }
 
 uint8 Distance_Coarse(int8* X_Now,int8* Y_Now,int8 X_Set,int8 Y_Set)
@@ -243,11 +239,11 @@ uint8 Distance_Coarse(int8* X_Now,int8* Y_Now,int8 X_Set,int8 Y_Set)
 			MECANUM_Motor_Data.Distance_Real.y = 0;
 			if(*Y_Now >= 6)
 			{
-				Distance_SetY=-15;
+				Distance_SetY=15;
 			}
 			else
 			{
-				Distance_SetY=15;
+				Distance_SetY=-15;
 			}
 		}
 		if(Continue_Flag_y == 1)	//当允许粗调时，开始粗调-x

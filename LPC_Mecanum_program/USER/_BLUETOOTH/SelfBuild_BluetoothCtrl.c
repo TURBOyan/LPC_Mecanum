@@ -125,7 +125,7 @@ void Chess_Before_Ctrl(void)
 	}
 	
 	if(continue_flag == 1
-	&&MECANUM_Motor_Data.Car_Arrive_Flag)		//第二步，当走到（First_axis[Point]，-1）时，发送00+First_axis[Point]
+	&&(MECANUM_Motor_Data.Car_Arrive_Flag || MECANUM_Motor_Data.Car_Coord_Now.x==First_axis[Point]))		//第二步，当走到（First_axis[Point]，-1）时，发送00+First_axis[Point]
 	{
 		continue_flag = 2;
 		MECANUM_Motor_Data.Car_Arrive_Flag = 0;
@@ -175,7 +175,18 @@ void Chess_Before_Ctrl(void)
 		MECANUM_Motor_Data.Car_RunPlayChess_Flag=1;
 	}
 	
+	if(continue_flag == 3			//如果接收到错误数据，则重新接收
+	&&Computer_communi.Data_FinishReceive_Flag
+	&&(Computer_communi.Data[0] != 'M' && Computer_communi.Data[0] != 'H' && Computer_communi.Data[0] != 'N'))
+	{
+		Computer_communi.Data_FinishReceive_Flag=0;
+		Computer_communi.Timer=0;	//清零10ms计数器
+		Computer_communi.Data_Point=0;		//清零指针
+	}
 }
+
+
+
 
 void Chess_Move_M(void)			//棋子移动控制
 {
@@ -197,13 +208,12 @@ void Chess_Move_M(void)			//棋子移动控制
 			Elema_Absorb(Elema_Mid);	//电磁铁开启
 		}
 		
-		if(continue_flag == 2)
+		if(continue_flag == 2)		//吸棋子计时
 		{
 			Timer++;
 		}
 		
 		if(continue_flag == 2
-//		&& Elema_Mid_Sensor_Read
 		&&Timer>=200
 		)			//如果磁铁已经吸起，则准备移动至下一个目标
 		{
@@ -232,35 +242,168 @@ void Chess_Move_M(void)			//棋子移动控制
 		{
 			 continue_flag =5;
 			 Timer =0;
-			 MECANUM_Motor_Data.Chess_Coord_Now.x=MECANUM_Motor_Data.Chess_Coord_Set.x;
+			 MECANUM_Motor_Data.Chess_Coord_Now.x=MECANUM_Motor_Data.Chess_Coord_Set.x;		//保存此时棋子的坐标
 			 MECANUM_Motor_Data.Chess_Coord_Now.y=MECANUM_Motor_Data.Chess_Coord_Set.y;
-			 MECANUM_Motor_Data.Car_Coord_Set.x =-1;		//设置期望坐标
-			 MECANUM_Motor_Data.Car_Coord_Set.y =-1;
+			 MECANUM_Motor_Data.Car_Coord_Set.x =MECANUM_Motor_Data.Car_Begin.x;		//指令车辆回到出发点
+			 MECANUM_Motor_Data.Car_Coord_Set.y =MECANUM_Motor_Data.Car_Begin.y;
 		}
 		
 		if(continue_flag == 5
-		&& MECANUM_Motor_Data.Car_Arrive_Flag)	//到达原点以后，关闭角度闭环，等待上按键按下执行下个回合
+		&& MECANUM_Motor_Data.Car_Arrive_Flag)	//到达原点以后
 		{
 			 continue_flag =6;
 			 MECANUM_Motor_Data.Car_Arrive_Flag = 0;
-			 MPU_Data.Yaw_CloseLoop_Flag = 0;//关闭角度闭环
+		}
+		
+		if(continue_flag == 6)	//缓冲一会儿
+		{
+			Timer++;
 		}
 		
 		if(continue_flag == 6
-		&&Query_ButtSwitData(Button_Data,Button_Up_Data))
+		&&Timer>=50)
 		{
-			continue_flag =5;
+			 continue_flag =7;
+			 MPU_Data.Yaw_CloseLoop_Flag = 0;//关闭角度闭环
+			 Elema_Absorb(Elema_Right);//重新吸起障碍
+			 Elema_Absorb(Elema_Front);//重新吸起障碍
+		}
+		
+		
+		if(continue_flag == 7
+		&&Query_ButtSwitData(Button_Data,Button_Up_Data))//等待上按键按下执行下个回合
+		{
+			continue_flag =0;
 			MECANUM_Motor_Data.Car_RunPlayChess_Flag = 0;		//完成一次移动棋子操作，准备接受下次指令
+			
+			MPU_Data.Yaw_CloseLoop_Flag =1;//重新开启角度闭环
 			MPU_Data.Yaw_Save=MPU_Data.Yaw;	//重新校准地图坐标
 			MPU_Data.Yaw_HeadZero_Aid=0;
 			MPU_Data.Yaw_MapZero_Save=0;
+
 		}
 }
 
 void WallCross_Push(void)	//横向障碍放置
 {
-	static uint8 continue_flag=0;
-	
+		static uint8 continue_flag=0;
+		static uint16 Timer=0;
+		if(continue_flag == 0)		//设置移动到目标障碍位置
+		{
+			continue_flag = 1;
+			MECANUM_Motor_Data.Car_Coord_Set.x =MECANUM_Motor_Data.Chess_Coord_Set.x;		//设置障碍期望坐标
+			MECANUM_Motor_Data.Car_Coord_Set.y =MECANUM_Motor_Data.Chess_Coord_Set.y;
+		}
+		
+		if(continue_flag == 1		//等到移动完成
+		&& MECANUM_Motor_Data.Car_Arrive_Flag == 1)
+		{
+			MECANUM_Motor_Data.Car_Arrive_Flag = 0;
+			continue_flag = 2;
+			Elema_Unabsorb(Elema_Front);	//首先放下车前方障碍
+		}
+		
+		if(continue_flag == 2)
+		{
+			Timer++;
+		}
+		if(continue_flag == 2
+		&&Timer>=50			//如果障碍已经放下，则准备移动至下一个目标
+		)			
+		{
+			continue_flag = 3;
+			Timer =0;
+			Car_Turn_Left_90(&MECANUM_Motor_Data.Car_Dir_Mode);			//左转90度
+
+		}
+		
+		if(continue_flag == 3
+		&& MPU_Data.Yaw_HeadZero >= (MPU_Data.Yaw_HeadZero_Aid-2) 
+		&& MPU_Data.Yaw_HeadZero <= (MPU_Data.Yaw_HeadZero_Aid+2)//当旋转完成
+		)
+		{
+			continue_flag = 4;
+			MECANUM_Motor_Data.Car_Coord_Set.x =MECANUM_Motor_Data.Chess_Coord_Set.x+1;		//向右方移动一格
+			MECANUM_Motor_Data.Car_Coord_Set.y =MECANUM_Motor_Data.Chess_Coord_Set.y;
+		}
+		
+		if(continue_flag == 4					//到达预定地点过后，放下棋子，并保存当前棋子位置
+		&& MECANUM_Motor_Data.Car_Arrive_Flag == 1)
+		{
+			continue_flag = 5;
+			MECANUM_Motor_Data.Car_Arrive_Flag = 0;
+		}
+		
+		if(continue_flag == 5)
+		{
+			Timer++;
+		}
+		
+		if(continue_flag == 5
+		&&Timer >= 50)
+		{
+			 continue_flag =6;
+			 Timer =0;
+			 Elema_Unabsorb(Elema_Right);		//关闭电磁铁，释放棋子
+		}
+		
+		if(continue_flag == 6)
+		{
+			Timer++;
+		}
+		
+		if(continue_flag == 6
+		&& Timer>=20
+		)
+		{
+			 continue_flag =7;
+			 MECANUM_Motor_Data.Car_Coord_Set.x =MECANUM_Motor_Data.Car_Begin.x;		//设置回到出发点
+			 MECANUM_Motor_Data.Car_Coord_Set.y =MECANUM_Motor_Data.Car_Begin.y;
+		}
+		
+		if(continue_flag == 7
+		&& MECANUM_Motor_Data.Car_Arrive_Flag)	//到达原点以后，关闭角度闭环，等待上按键按下执行下个回合
+		{
+			 continue_flag =8;
+			 MECANUM_Motor_Data.Car_Arrive_Flag = 0;
+			 Car_Turn_Right_90(&MECANUM_Motor_Data.Car_Dir_Mode);		//右转90度
+		}
+		
+		if(continue_flag == 8
+		&& MPU_Data.Yaw_HeadZero >= (MPU_Data.Yaw_HeadZero_Aid-2) 
+		&& MPU_Data.Yaw_HeadZero <= (MPU_Data.Yaw_HeadZero_Aid+2)//当旋转完成
+		)
+		{
+			 continue_flag =9;
+		}
+		
+		if(continue_flag == 9)
+		{
+			Timer++;
+		}
+		
+		if(continue_flag == 9
+		&& Timer >= 100)			//1秒后关闭角度闭环
+		{
+			continue_flag =10;
+			Timer=0;
+			MPU_Data.Yaw_CloseLoop_Flag = 0;//关闭角度闭环
+		  Elema_Absorb(Elema_Right);//重新吸起障碍
+		  Elema_Absorb(Elema_Front);//重新吸起障碍
+		}
+
+		if(continue_flag == 10
+		&&Query_ButtSwitData(Button_Data,Button_Up_Data))
+		{
+			continue_flag =0;
+			MECANUM_Motor_Data.Car_RunPlayChess_Flag = 0;		//完成一次移动棋子操作，准备接受下次指令
+			
+			MPU_Data.Yaw_CloseLoop_Flag =1;		//重新开启角度闭环
+			MPU_Data.Yaw_Save=MPU_Data.Yaw;	//重新校准地图坐标
+			MPU_Data.Yaw_HeadZero_Aid=0;
+			MPU_Data.Yaw_MapZero_Save=0;
+
+		}
 	
 }
 

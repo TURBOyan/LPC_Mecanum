@@ -22,11 +22,7 @@ extern struct Base_Data_Typedef	//»ù´¡Êý¾Ý
 	uint8 Switch_Data,Button_Data;
 	
 	uint8 Gray_Data[6][6];
-	uint8 Gray_Data_Last[6][6];
-	uint8 Gray_Data_Rise[6][6];
-	uint8 Gray_Data_Fall[6][6];
-	
-	uint8 Gray_Correct_Allow;
+
 }Base_Data;
  
 #define Query_ButtSwitData(ButtOrSwit,Data) ((Base_Data.ButtOrSwit & Data)==Data)

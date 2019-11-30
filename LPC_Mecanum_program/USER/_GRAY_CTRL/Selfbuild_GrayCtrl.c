@@ -12,7 +12,7 @@ PIN_enum Gray[6][6]={		//光电管位置（第一行为车头）
 #endif
 
 #ifdef new_PCB
-PIN_enum Gray[6][6]={		//光电管位置（第一行为车头）
+PIN_enum Gray_Front[6][6]={		//光电管位置（第一行为正前方）		//车头朝向为前时
 {B31, A0, B11, A2 ,B17 ,B15},
 {A6,0xff,0xff,0xff,0xff,B16},
 {A19,0xff,0xff,0xff,0xff,A5},
@@ -20,36 +20,25 @@ PIN_enum Gray[6][6]={		//光电管位置（第一行为车头）
 {B20,0xff,0xff,0xff,0xff,A17},
 {B19,B18 , B6 ,A21 , A20 ,B28},
 };
+
+PIN_enum Gray_Left[6][6]={		//光电管位置（第一行为正前方）	//车头朝向为左时
+{B15, B16, A5, A18 ,A17 ,B28},
+{B17,0xff,0xff,0xff,0xff,A20},
+{A2,0xff,0xff,0xff,0xff,A21},
+{B11 ,0xff,0xff,0xff,0xff,B6},	
+{A0,0xff,0xff,0xff,0xff,B18},
+{B31,A6 , A19 ,A10 , B20 ,B19},
+};
+
+PIN_enum Gray_Right[6][6]={		//光电管位置（第一行为正前方）	//车头朝向为右时
+{B19, B20, A10, A19 ,A6 ,B31},
+{B18,0xff,0xff,0xff,0xff,A0},
+{B6,0xff,0xff,0xff,0xff,B11},
+{A21 ,0xff,0xff,0xff,0xff,A2},	
+{A20,0xff,0xff,0xff,0xff,B17},
+{B28,A17 , A18 ,A5 , B16 ,B15},
+};
 #endif
-
-//PIN_enum Gray[6][6]={		//光电管位置（第一行为车头）
-//{B31 , A0 , B11,0xff,0xff,0xff},
-//{A6  ,0xff,0xff,0xff,0xff,0xff},
-//{A19 ,0xff,0xff,0xff,0xff,0xff},
-//{0xff,0xff,0xff,0xff,0xff, A18},	
-//{0xff,0xff,0xff,0xff,0xff, A17},
-//{0xff,0xff,0xff,A21 ,A20 , B28},
-//};
-
-void Gray_RotationClockwise90(PIN_enum a[6][6])		//将6x6数组顺时针旋转90度
-{
-	uint8 offect,first,last;
-	PIN_enum top;
-	for(uint8 layer=0;layer< 6/2;layer++)
-	{
-		first = layer;
-		last = 6-1 - layer;
-		for(uint8 i = first;i<last;i++)
-		{
-			offect = i - first;
-			top = a[first][i];
-			a[first][i] = a[last-offect][first];
-			a[last-offect][first] = a[last][last - offect];	
-			a[last][last - offect] = a[i][last]; 
-			a[i][last] = top;
-		}
-	}
-}
 
 void Read_GrayData(uint8 x,uint8 y,uint8 showflag)	//读取光电管值并设定是否显示
 {
@@ -62,40 +51,31 @@ void Read_GrayData(uint8 x,uint8 y,uint8 showflag)	//读取光电管值并设定是否显示
 	{
 		for(uint8 col=0;col<6;col++)
 		{
-			if((uint8)(Gray[row][col])!=0xff)
+			if(MECANUM_Motor_Data.Car_Dir_Mode == Front)	
 			{
-				Base_Data.Gray_Data[row][col]=gpio_get(Gray[row][col]);
-				if(showflag)OLED_P6x8Int(col*6+x, row+y, Base_Data.Gray_Data[row][col], 1);
+				if((uint8)(Gray_Front[row][col])!=0xff)
+				{
+					Base_Data.Gray_Data[row][col]=gpio_get(Gray_Front[row][col]);
+					if(showflag)OLED_P6x8Int(col*6+x, row+y, Base_Data.Gray_Data[row][col], 1);
+				}
 			}
-		}
-	}
-}
-
-void Save_GrayData(uint8 data_new[6][6],uint8 data_save[6][6])	//保存光电管值
-{
-	for(uint8 row=0;row<6;row++)
-	{
-		for(uint8 col=0;col<6;col++)
-		{
-			data_save[row][col]=data_new[row][col];
-		}
-	}
-}
-
-void Judge_GrayData(void)	//跳变点检测
-{
-	for(uint8 row=0;row<6;row++)
-	{
-		for(uint8 col=0;col<6;col++)
-		{
-			if(Base_Data.Gray_Data[row][col]<Base_Data.Gray_Data_Last[row][col])//如果上次光电管判断到白线而这次没有则下降沿置一
-				Base_Data.Gray_Data_Fall[row][col]=1;
-			else if(Base_Data.Gray_Data[row][col]>Base_Data.Gray_Data_Last[row][col])//如果这次光电管判断到白线而上次没有则上升沿置一
-				Base_Data.Gray_Data_Rise[row][col]=1;
-			else
+			
+			if(MECANUM_Motor_Data.Car_Dir_Mode == Left)	
 			{
-				Base_Data.Gray_Data_Fall[row][col]=0;
-				Base_Data.Gray_Data_Rise[row][col]=0;
+				if((uint8)(Gray_Left[row][col])!=0xff)
+				{
+					Base_Data.Gray_Data[row][col]=gpio_get(Gray_Left[row][col]);
+					if(showflag)OLED_P6x8Int(col*6+x, row+y, Base_Data.Gray_Data[row][col], 1);
+				}
+			}
+			
+			if(MECANUM_Motor_Data.Car_Dir_Mode == Right)
+			{
+				if((uint8)(Gray_Right[row][col])!=0xff)
+				{
+					Base_Data.Gray_Data[row][col]=gpio_get(Gray_Right[row][col]);
+					if(showflag)OLED_P6x8Int(col*6+x, row+y, Base_Data.Gray_Data[row][col], 1);
+				}
 			}
 		}
 	}
