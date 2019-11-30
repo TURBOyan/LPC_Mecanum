@@ -125,7 +125,7 @@ void Chess_Before_Ctrl(void)
 	}
 	
 	if(continue_flag == 1
-	&&(MECANUM_Motor_Data.Car_Arrive_Flag || MECANUM_Motor_Data.Car_Coord_Now.x==First_axis[Point]))		//第二步，当走到（First_axis[Point]，-1）时，发送00+First_axis[Point]
+	&&(MECANUM_Motor_Data.Car_Arrive_Flag))		//第二步，当走到（First_axis[Point]，-1）时，发送00+First_axis[Point]
 	{
 		continue_flag = 2;
 		MECANUM_Motor_Data.Car_Arrive_Flag = 0;
@@ -184,9 +184,6 @@ void Chess_Before_Ctrl(void)
 		Computer_communi.Data_Point=0;		//清零指针
 	}
 }
-
-
-
 
 void Chess_Move_M(void)			//棋子移动控制
 {
@@ -541,7 +538,6 @@ void Chess_Ctrl(void)		//下棋总控
 	
 	if(Computer_communi.Data[0] == 'H')
 	{
-
     WallCross_Push();		//横向障碍放置
 	}
 	

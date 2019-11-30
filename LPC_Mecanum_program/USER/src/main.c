@@ -12,7 +12,7 @@ int main(void)
 	MECANUM_Motor_Data.Speed_All=1500;			//全车最大速度
 	MPU_Data.Yaw_CloseLoop_Flag=1;					//默认开启偏航角闭环
 	
-	MECANUM_Motor_Data.Car_Begin.x=-1;			//设置出发坐标
+	MECANUM_Motor_Data.Car_Begin.x=0;			//设置出发坐标
 	MECANUM_Motor_Data.Car_Begin.y=-1;
 	
 	MECANUM_Motor_Data.Chess_Coord_Now.x=3;		//设置棋子初始坐标

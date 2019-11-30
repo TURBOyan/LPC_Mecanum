@@ -30,7 +30,7 @@ uint8 Encoder_Dir_Set[Wheel_Sum+1]		={				0        ,         0      ,        1  
 **************************************************************************/
 void Wheel_Analysis(void)
 {
-		MECANUM_Motor_Data.Speed_GyroZ_Out=RANGE(MECANUM_Motor_Data.Speed_GyroZ_Out,100,-100);	//限幅
+		MECANUM_Motor_Data.Speed_GyroZ_Out=RANGE(MECANUM_Motor_Data.Speed_GyroZ_Out,70,-70);	//限幅
 	
 		MECANUM_Motor_Data.Speed.x=MECANUM_Motor_Data.Speed_Real.x*cos(MPU_Data.Yaw_MapZero*0.0174533)	//将地图坐标转换为机械坐标
 															+MECANUM_Motor_Data.Speed_Real.y*sin(MPU_Data.Yaw_MapZero*0.0174533-3.1415926);
