@@ -1,5 +1,8 @@
 #include "Selfbuild_GrayCtrl.h"
 
+#define Speed2_1 1000
+#define Speed2_2 700
+
 #ifdef old_PCN
 PIN_enum Gray[6][6]={		//光电管位置（第一行为车头）
 {B31, A0, B11, B15 , A2,B30},
@@ -113,13 +116,13 @@ uint8 Gray_Calibration_X(int16 X_Dir,int8 Return_Flag)
 	if(Return_Flag == 1)X_Dir_judge=-X_Dir_judge;
 	
 	if(Continue_flag == 0)
-		MECANUM_Motor_Data.Speed_Real.x=500*X_Dir_judge;
+		MECANUM_Motor_Data.Speed_Real.x=Speed2_1*X_Dir_judge;
 	
 	if(Continue_flag == 0
 		&&(Gray_xleft_sum  >= Gray_Aid_Num ||Gray_xRight_sum  >= Gray_Aid_Num))
 	{
 		Continue_flag = 1;
-		MECANUM_Motor_Data.Speed_Real.x=200*X_Dir_judge;
+		MECANUM_Motor_Data.Speed_Real.x=Speed2_2*X_Dir_judge;
 	}
 	
 	if( Continue_flag == 1
@@ -167,13 +170,13 @@ uint8 Gray_Calibration_Y(int16 Y_Dir,int8 Return_Flag)
 	if(Return_Flag ==1)Y_Dir_judge=-Y_Dir_judge;
 	
 	if(Continue_flag == 0)
-		MECANUM_Motor_Data.Speed_Real.y=500*Y_Dir_judge;
+		MECANUM_Motor_Data.Speed_Real.y=Speed2_1*Y_Dir_judge;
 	
 	if(Continue_flag == 0
 		&&(Gray_yUp_sum  >= Gray_Aid_Num ||Gray_yDown_sum  >= Gray_Aid_Num))
 	{
 		Continue_flag = 1;
-		MECANUM_Motor_Data.Speed_Real.y=200*Y_Dir_judge;
+		MECANUM_Motor_Data.Speed_Real.y=Speed2_2*Y_Dir_judge;
 	}
 	
 	if( Continue_flag == 1

@@ -1,6 +1,8 @@
 #include "SelfBuild_control.h"
 #include <string.h>
 
+#define Speed_1 2000
+
 struct Base_Data_Typedef Base_Data;	//基础数据
 
 void Init_ALL(void)		//全车初始化
@@ -171,15 +173,15 @@ uint8 Distance_Coarse(int8* X_Now,int8* Y_Now,int8 X_Set,int8 Y_Set)
 			MECANUM_Motor_Data.Speed_Real.x=10*PID_Calcu	(Distance_SetX,MECANUM_Motor_Data.Distance_Real.x,&PID_Dis[0],Local);
 			if(fabs(MECANUM_Motor_Data.Distance_Real.x)<=5)		//地图X方向//启动时
 			{
-				MECANUM_Motor_Data.Speed_Real.x=RANGE(MECANUM_Motor_Data.Speed_Real.x,900,-900);
+				MECANUM_Motor_Data.Speed_Real.x=RANGE(MECANUM_Motor_Data.Speed_Real.x,Speed_1,-Speed_1);
 			}
-			else if(fabs(Distance_SetX-MECANUM_Motor_Data.Distance_Real.x)>=50)
+			else if(fabs(Distance_SetX-MECANUM_Motor_Data.Distance_Real.x)>=51)
 			{
 				MECANUM_Motor_Data.Speed_Real.x=RANGE(MECANUM_Motor_Data.Speed_Real.x,MECANUM_Motor_Data.Speed_All,-MECANUM_Motor_Data.Speed_All);
 			}
 			else//将要接近目标坐标时
 			{
-				MECANUM_Motor_Data.Speed_Real.x=RANGE(MECANUM_Motor_Data.Speed_Real.x,900,-900);
+				MECANUM_Motor_Data.Speed_Real.x=RANGE(MECANUM_Motor_Data.Speed_Real.x,Speed_1,-Speed_1);
 			}
 		}
 		
@@ -187,15 +189,6 @@ uint8 Distance_Coarse(int8* X_Now,int8* Y_Now,int8 X_Set,int8 Y_Set)
 		&& Return_Flag_x == 0
 		&&(MECANUM_Motor_Data.Distance_Real.x >=Distance_SetX-30)
 		&&(MECANUM_Motor_Data.Distance_Real.x <=Distance_SetX+30)
-		)
-		{
-			Continue_Flag_x =2;
-		}
-		
-		if(	 Continue_Flag_x == 1					//当接近目标坐标时，且回调标志位置位，停止粗调，开始细调,
-		&& Return_Flag_x == 1
-		&&(MECANUM_Motor_Data.Distance_Real.x >=Distance_SetX-1)
-		&&(MECANUM_Motor_Data.Distance_Real.x <=Distance_SetX+1)
 		)
 		{
 			Continue_Flag_x =2;
@@ -238,15 +231,15 @@ uint8 Distance_Coarse(int8* X_Now,int8* Y_Now,int8 X_Set,int8 Y_Set)
 			MECANUM_Motor_Data.Speed_Real.y=10*PID_Calcu	(Distance_SetY,MECANUM_Motor_Data.Distance_Real.y,&PID_Dis[1],Local);
 			if(fabs(MECANUM_Motor_Data.Distance_Real.y)<=5)		//地图X方向//启动时
 			{
-				MECANUM_Motor_Data.Speed_Real.y=RANGE(MECANUM_Motor_Data.Speed_Real.y,900,-900);
+				MECANUM_Motor_Data.Speed_Real.y=RANGE(MECANUM_Motor_Data.Speed_Real.y,Speed_1,-Speed_1);
 			}
-			else if(fabs(Distance_SetY-MECANUM_Motor_Data.Distance_Real.y)>=50)
+			else if(fabs(Distance_SetY-MECANUM_Motor_Data.Distance_Real.y)>=51)
 			{
 				MECANUM_Motor_Data.Speed_Real.y=RANGE(MECANUM_Motor_Data.Speed_Real.y,MECANUM_Motor_Data.Speed_All,-MECANUM_Motor_Data.Speed_All);
 			}
 			else//将要接近目标坐标时
 			{
-				MECANUM_Motor_Data.Speed_Real.y=RANGE(MECANUM_Motor_Data.Speed_Real.y,900,-900);
+				MECANUM_Motor_Data.Speed_Real.y=RANGE(MECANUM_Motor_Data.Speed_Real.y,Speed_1,-Speed_1);
 			}
 		}
 		
@@ -259,14 +252,6 @@ uint8 Distance_Coarse(int8* X_Now,int8* Y_Now,int8 X_Set,int8 Y_Set)
 			Continue_Flag_y =2;
 		}
 		
-		if(	 Continue_Flag_y == 1					//当接近目标坐标时，且回调标志位置位，停止粗调，开始细调,
-		&& Return_Flag_y == 1
-		&&(MECANUM_Motor_Data.Distance_Real.y >=Distance_SetY-1)
-		&&(MECANUM_Motor_Data.Distance_Real.y <=Distance_SetY+1)
-		)
-		{
-			Continue_Flag_y =2;
-		}
 		
 		if(Continue_Flag_y == 2
 		 &&Gray_Calibration_Y((int16)Distance_SetY,Return_Flag_y)		//光电管细调
@@ -282,6 +267,26 @@ uint8 Distance_Coarse(int8* X_Now,int8* Y_Now,int8 X_Set,int8 Y_Set)
 		/******************************************************/
 		/******************************************************/
 		/******************************************************/
+		if(	 Continue_Flag_x == 1					//当接近目标坐标时，且回调标志位置位，停止粗调，开始细调,
+		&& Return_Flag_x == 1
+		&&(MECANUM_Motor_Data.Distance_Real.y >=Distance_SetY-20)
+		&&(MECANUM_Motor_Data.Distance_Real.y <=Distance_SetY+20)
+		)
+		{
+			Continue_Flag_x =2;
+		}
+		
+		if(	 Continue_Flag_y == 1					//当接近目标坐标时，且回调标志位置位，停止粗调，开始细调,
+		&& Return_Flag_y == 1
+		&&(MECANUM_Motor_Data.Distance_Real.x >=Distance_SetX-20)
+		&&(MECANUM_Motor_Data.Distance_Real.x <=Distance_SetX+20)
+		)
+		{
+			Continue_Flag_y =2;
+		}
+		
+		
+		
 		
 		if(Continue_Flag_x==3
 		 &&Continue_Flag_y==3)

@@ -118,7 +118,6 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>P蜈</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -151,55 +150,17 @@
           <Name>-T0</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint>
-        <Bp>
-          <Number>0</Number>
-          <Type>0</Type>
-          <LineNumber>27</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>68774</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>F:\2019 smart car competition\浜斿瓙妫嬫満鍣ㄤ汉\LPC_Mecanum\LPC_Mecanum_program\USER\src\main.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\LPC546XX\USER/src/main.c\27</Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
-          <LineNumber>21</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>68750</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>F:\2019 smart car competition\浜斿瓙妫嬫満鍣ㄤ汉\LPC_Mecanum\LPC_Mecanum_program\USER\src\main.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\LPC546XX\USER/src/main.c\21</Expression>
-        </Bp>
-      </Breakpoint>
+      <Breakpoint/>
       <WatchWindow1>
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Computer_communi.Data</ItemText>
+          <ItemText>MECANUM_Motor_Data.Car_Coord_Now</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>MECANUM_Motor_Data.Chess_Coord_Now</ItemText>
-        </Ww>
-        <Ww>
-          <count>2</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>MECANUM_Motor_Data.Chess_Coord_Set</ItemText>
+          <ItemText>MECANUM_Motor_Data.Car_Coord_Set</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

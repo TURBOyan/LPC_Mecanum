@@ -22,6 +22,8 @@
 
 void PIN_INT1_DriverIRQHandler(void)															
 {
+		static uint16 count=0;
+	
 		PINT_IST_FLAG_CLEAR(PINT_CH1);
 		disable_irq(PIN_INT1_IRQn);		//暂时关闭中断
 		pit_init_ms(10);		//开启10ms计时，防止本中断执行时间超过10ms
@@ -29,20 +31,42 @@ void PIN_INT1_DriverIRQHandler(void)
 		enable_irq(RIT_IRQn);
 	
 /*********************指令解析******************************************************************************/	
-		if(MECANUM_Motor_Data.Car_RunPlayChess_Flag == 0)		
-		{
-			Uart_Receive_Ctrl(10);		//指令数据保存
-			Chess_Before_Ctrl();			//下棋前准备工作指令解析
-		}
-		else
-		{
-			Chess_Ctrl();							//下棋控制指令解析
-		}
+	if(Query_ButtSwitData(Button_Data,Button_Mid_Data) == 1			//切换手动
+	&& MECANUM_Motor_Data.Car_Manual_Flag == 0)
+	{
+		MECANUM_Motor_Data.Car_Manual_Flag =1;
+	}
+	if(Query_ButtSwitData(Button_Data,Button_Mid_Data) == 0
+	&& MECANUM_Motor_Data.Car_Manual_Flag == 1)
+	{
+		MECANUM_Motor_Data.Chess_Coord_Set.x = MECANUM_Motor_Data.Chess_Coord_Now.x;
+		MECANUM_Motor_Data.Chess_Coord_Set.y = MECANUM_Motor_Data.Chess_Coord_Now.y;
+		MECANUM_Motor_Data.Car_Manual_Flag =2;
+	}
+	
+	if(MECANUM_Motor_Data.Car_Manual_Flag == 0)		//自动模式
+	{
+			if(MECANUM_Motor_Data.Car_RunPlayChess_Flag == 0)		
+			{
+				Uart_Receive_Ctrl(10);		//指令数据保存
+				Chess_Before_Ctrl();			//下棋前准备工作指令解析
+			}
+			else
+			{
+				Chess_Ctrl_Auto();							//下棋控制指令解析,自动
+			}
+			
+	}
+	
+	if(MECANUM_Motor_Data.Car_Manual_Flag == 2)	
+	{
+		Chess_Ctrl_Manual();		//下棋控制指令解析，手动
+	}
 		
 /*********************准备工作******************************************************************************/
 		Read_ButtSwitData();			//读取按键值
 		Refresh_MPUTeam(DMP_MPL); //读取三态角
-		Read_GrayData(95,2,1);		//读取光电管值，并显示在95列，第3行的位置
+		Read_GrayData(95,2,0);		//读取光电管值，并显示在95列，第3行的位置
 
 /*********************以下为指令执行部分******************************************************************************/
 		Distance_Coarse(&MECANUM_Motor_Data.Car_Coord_Now.x		//距离粗调+光电管细调
@@ -50,13 +74,6 @@ void PIN_INT1_DriverIRQHandler(void)
 											, MECANUM_Motor_Data.Car_Coord_Set.x
 											, MECANUM_Motor_Data.Car_Coord_Set.y);
 		
-			//如果按下上键，并且拨码开关1是开启状态，则重新校准地图坐标
-		if(Query_ButtSwitData(Button_Data,Button_Up_Data) && Query_ButtSwitData(Switch_Data,Switch_1_Data))	
-		{
-			MPU_Data.Yaw_Save=MPU_Data.Yaw;
-			MPU_Data.Yaw_HeadZero_Aid=0;
-			MPU_Data.Yaw_MapZero_Save=0;
-		}
 		MPU_Yaw_Closeloop();  		//偏航角闭环控制
 		
 		Wheel_Analysis();					//目标速度计算 
@@ -68,8 +85,8 @@ void PIN_INT1_DriverIRQHandler(void)
 /**/		OLED_P6x8Int(0, 1, MECANUM_Motor_Data.Distance_Real.y, -5);
 /**/		OLED_P6x8Int(0, 2, MECANUM_Motor_Data.Speed_Real.x, -5);
 /**/		OLED_P6x8Int(0, 3, MECANUM_Motor_Data.Speed_Real.y, -5);		
-/**/		OLED_P6x8Int(0, 4,MECANUM_Motor_Data.Car_Coord_Set.x, -1);
-/**/		OLED_P6x8Int(15, 4, MECANUM_Motor_Data.Car_Coord_Set.y, -1);	
+/**/		OLED_P6x8Int(0, 4,MECANUM_Motor_Data.Chess_Coord_Set.x, -1);
+/**/		OLED_P6x8Int(15, 4, MECANUM_Motor_Data.Chess_Coord_Set.y, -1);	
 /**//**************************************************************************************/
 
 /*********************以上放自己的控制代码******************************************************************************/	

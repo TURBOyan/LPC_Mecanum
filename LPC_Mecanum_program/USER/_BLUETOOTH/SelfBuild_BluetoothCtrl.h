@@ -15,6 +15,7 @@ extern struct Computer_communi_Typedef
 void Android_Ctrl(uint8 Data);
 void Uart_Receive_Ctrl(uint16 Timeout_10ms_num);
 void Chess_Before_Ctrl(void);
-void Chess_Ctrl(void);
+void Chess_Ctrl_Auto(void);
+void Chess_Ctrl_Manual(void);
 
 #endif
