@@ -17,9 +17,7 @@ int main(void)
 	MECANUM_Motor_Data.Chess_Coord_Now.y=0;
 
 	MECANUM_Motor_Data.Car_Dir_Mode=Front;	//设置初始车体朝向
-	
 	//以上为用户设置部分,以下不允许修改
-	
 	MECANUM_Motor_Data.Chess_Coord_Set.x=MECANUM_Motor_Data.Chess_Coord_Now.x;		//设置棋子期望坐标
 	MECANUM_Motor_Data.Chess_Coord_Set.y=MECANUM_Motor_Data.Chess_Coord_Now.y;
 	MECANUM_Motor_Data.Car_Coord_Now.x =MECANUM_Motor_Data.Car_Begin.x;		//设置初始坐标

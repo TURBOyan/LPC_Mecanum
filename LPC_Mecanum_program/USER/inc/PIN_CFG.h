@@ -74,16 +74,16 @@
 
 #ifdef new_PCB
 	#define Servo A26				//引脚定义
-	#define Servo_Init 	 sct_pwm_init(SCT0_OUT5_A26, 330, 3500);	//舵机初始化
-	#define Servo_Up   	 sct_pwm_duty(SCT0_OUT5_A26, 3500)		//舵机拿起
+	#define Servo_Init 	 sct_pwm_init(SCT0_OUT5_A26, 330, 2800);	//舵机初始化
+	#define Servo_Up   	 sct_pwm_duty(SCT0_OUT5_A26, 2800)		//舵机拿起
 	#define Servo_Down   sct_pwm_duty(SCT0_OUT5_A26, 5000)		//舵机放下
 
 #endif
 
 //电磁铁
-#define Elema_Mid    A30		//引脚定义
-#define Elema_Front  A29
-#define Elema_Right  A3
+#define Elema_Mid    A29		//引脚定义
+#define Elema_Front  A30
+#define Elema_Right  B4
 #define Elema_Init(x)     gpio_init(x,GPO,0,PULLUP)	//电磁铁初始化
 #define Elema_Absorb(x)   gpio_set(x,1)			//电磁铁吸起
 #define Elema_Unabsorb(x) gpio_set(x,0)			//电磁铁放下
